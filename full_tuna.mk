@@ -32,4 +32,4 @@ $(call inherit-product, device/samsung/tuna/device.mk)
 PRODUCT_NAME := full_tuna
 PRODUCT_DEVICE := tuna
 PRODUCT_BRAND := Android
-PRODUCT_MODEL := Full AOSP on Tuna
+PRODUCT_MODEL := VanirAOSP
