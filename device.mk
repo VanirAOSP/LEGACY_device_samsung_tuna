@@ -63,7 +63,8 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
-	device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
+	device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf \
+	device/samsung/tuna/init.partitions.rc:root/init.partitions.rc
 
 PRODUCT_PACKAGES += \
 	tuna_hdcp_keys
