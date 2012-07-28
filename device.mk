@@ -20,9 +20,11 @@
 # Everything in this directory will become public
 
 ifeq ($(TARGET_PREBUILT_KERNEL),)
-LOCAL_KERNEL := device/samsung/tuna/kernel
+TUNA_LOCAL_KERNEL := device/samsung/tuna/kernel
+$(TUNA_LOCAL_KERNEL): android_kernel
+	cp -f kernel/arch/arm/boot/zImage $(TUNA_LOCAL_KERNEL)
 else
-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+TUNA_LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 endif
 
 DEVICE_PACKAGE_OVERLAYS := device/samsung/tuna/overlay
@@ -73,7 +75,7 @@ PRODUCT_PACKAGES += \
 #	keystore.tuna
 
 PRODUCT_COPY_FILES += \
-	$(LOCAL_KERNEL):kernel \
+	$(TUNA_LOCAL_KERNEL):kernel \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
 	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
 	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
