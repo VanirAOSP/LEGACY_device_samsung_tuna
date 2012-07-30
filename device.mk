@@ -22,7 +22,7 @@
 ifeq ($(TARGET_PREBUILT_KERNEL),)
 TUNA_LOCAL_KERNEL := device/samsung/tuna/kernel
 $(TUNA_LOCAL_KERNEL): android_kernel
-	cp -f kernel/arch/arm/boot/zImage $(TUNA_LOCAL_KERNEL)
+	cp -f $(PRODUCT_OUT)/obj/kernel/arch/arm/boot/zImage $(TUNA_LOCAL_KERNEL)
 else
 TUNA_LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 endif
