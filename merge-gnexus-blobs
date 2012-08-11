@@ -1,0 +1,299 @@
+#!/bin/bash
+#
+# This script merges non-free binaries from Google's Galaxy Nexus firmware
+# into the Linaro Galaxy Nexus build.
+#
+# (C) 2012 Bernhard Rosenkraenzer <Bernhard.Rosenkranzer@linaro.org>
+# Released under the Apache Software License 2.0.
+
+
+SRC=""
+if [ -d "$1" ]; then
+	if [ -e "$1"/system.img ]; then
+		SRC="$1"/
+	elif [ -e "$1"/out/target/product/maguro/system.img ]; then
+		SRC="$1"/out/target/product/maguro/
+	fi
+elif [ -e system.img ]; then
+	SRC="`pwd`"/
+elif [ -e out/target/product/maguro/system.img ]; then
+	SRC="`pwd`"/out/target/product/maguro/
+fi
+if [ -z "$SRC" ]; then
+	echo "Usage: $0 [/path/to/linaro/images]"
+	exit 1
+fi
+if [ "`id -u`" != 0 ]; then
+	SUDO="`which sudo`"
+	[ -z "$SUDO" ] && SUDO="su -c"
+else
+	SUDO=""
+fi
+error() {
+	# Clean up...
+	$SUDO umount -f "`pwd`"/linaro &>/dev/null
+	$SUDO umount -f "`pwd`"/blob &>/dev/null
+	# Then let the user know
+	echo
+	echo "*******************************************************************************"
+	echo
+	echo "Something went wrong."
+	echo "Check the output above for errors to see details."
+	echo
+	echo "Make sure you have all prerequisites installed and you have a working"
+	echo "Internet connection."
+	echo
+	echo "Prerequisites include:"
+	echo "	Git (git)		http://git-scm.org/"
+	echo "	GCC			http://gcc.gnu.org/ or http://launchpad.net/gcc-linaro"
+	echo "	wget			http://www.gnu.org/software/wget"
+	echo "	sudo			http://gratisoft.us/sudo/ (alternatively, run as root)"
+	echo "	mount, kernel with ext4 support"
+	exit 1
+}
+trap error ERR
+WD="`pwd`"
+cd "`dirname $0`"
+export PATH="$PATH":"`pwd`"/extras/ext4_utils
+CFLAGS="-O2 -march=native -mtune=native -DANDROID -I`pwd`/core/include"
+# We don't need to touch YAFFS bits right now
+#if ! which unyaffs &>/dev/null; then
+#	svn co http://unyaffs.googlecode.com/svn/trunk unyaffs
+#	cd unyaffs
+#	gcc $CFLAGS -o unyaffs unyaffs.c
+#fi
+if ! which simg2img &>/dev/null; then
+	if [ ! -d extras ]; then
+		# http fallback is for people behind restrictive firewalls
+		git clone git://android.git.linaro.org/platform/system/extras.git || \
+			git clone http://android.git.linaro.org/platform/system/extras.git
+		git clone git://android.git.linaro.org/platform/system/core.git || \
+			git clone http://android.git.linaro.org/platform/system/core.git
+		cd extras
+		git checkout -b jb android-4.1.1_r4
+		cd ext4_utils
+		gcc $CFLAGS -o simg2img simg2img.c sparse_crc32.c
+		gcc $CFLAGS -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c backed_block.c output_file.c contents.c extent.c indirect.c uuid.c sha1.c sparse_crc32.c wipe.c -lz
+		cd ../..
+	fi
+fi
+[ -e takju-jro03c-factory-bf087655.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jro03c-factory-bf087655.tgz
+[ -d takju-jro03c ] || tar xf takju-jro03c-factory-bf087655.tgz
+[ -e recovery-clockwork-touch-6.0.1.0-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.1.0-maguro.img
+cd takju-jro03c
+if [ ! -e system.img ]; then
+	unzip image-takju-jro03c.zip
+fi
+cd ..
+simg2img "$SRC"/system.img linaro.ext4
+simg2img takju-jro03c/system.img blob.ext4
+mkdir -p blob linaro system
+$SUDO mount -t ext4 -o loop,ro linaro.ext4 linaro
+$SUDO mount -t ext4 -o loop,ro blob.ext4 blob
+$SUDO rm -rf target tmp
+mkdir target
+$SUDO cp -a linaro/* target/
+$SUDO umount linaro
+$SUDO cp -a \
+	blob/vendor/pittpatt \
+	blob/vendor/bin \
+	blob/vendor/etc \
+	target/vendor/
+$SUDO cp -a \
+	blob/vendor/firmware/bcm4330.hcd \
+	blob/vendor/firmware/ducati-m3.bin \
+	blob/vendor/firmware/libpn544_fw.so \
+	blob/vendor/firmware/smc_pa_wvdrm.ift \
+	target/vendor/firmware/
+$SUDO cp -a \
+	blob/vendor/lib/drm \
+	blob/vendor/lib/egl \
+	target/vendor/lib/
+$SUDO cp -a \
+	blob/vendor/lib/hw/gps.omap4.so \
+	blob/vendor/lib/hw/gralloc.omap4.so \
+	target/vendor/lib/hw/
+$SUDO cp -a \
+	blob/vendor/lib/*.so \
+	target/vendor/lib/
+# FIXME
+# Google builds also replace some APKs in /system/app - at some point, we
+# should determine what the differences are, and whether or not it makes
+# sense to copy over the Google versions...
+#	Browser -> BrowserGoogle
+#	Calendar -> CalendarGoogle
+#	DeskClock -> DeskClockGoogle
+#	Email -> EmailGoogle
+#	Exchange2 -> Exchange2Google
+#	Gallery2 -> GalleryGoogle
+#	LatinIME -> LatinImeGoogle
+#	Music -> Music2
+#	Tag -> TagGoogle
+#	VideoEditor -> VideoEditorGoogle
+$SUDO cp -a \
+	blob/app/Books.* \
+	blob/app/ChromeBookmarksSyncAdapter.* \
+	blob/app/Currents.* \
+	blob/app/FaceLock.* \
+	blob/app/GenieWidget.* \
+	blob/app/Gmail.* \
+	blob/app/GmsCore.* \
+	blob/app/Google*.* \
+	blob/app/LatinImeDictionaryPack.* \
+	blob/app/Magazines.* \
+	blob/app/Maps.* \
+	blob/app/MediaUploader.* \
+	blob/app/NetworkLocation.* \
+	blob/app/OneTimeInitializer.* \
+	blob/app/Phonesky.* \
+	blob/app/PlusOne.* \
+	blob/app/SetupWizard.* \
+	blob/app/Stk.* \
+	blob/app/Street.* \
+	blob/app/Talk.* \
+	blob/app/Thinkfree.* \
+	blob/app/Velvet.* \
+	blob/app/Videos.* \
+	blob/app/VoiceSearchStub.* \
+	blob/app/Wallet.* \
+	blob/app/YouTube.* \
+	blob/app/talkback.* \
+	target/app/
+$SUDO cp -a \
+	blob/bin/fRom \
+	target/bin/
+$SUDO cp -a \
+	blob/etc/permissions/com.google.* \
+	blob/etc/permissions/features.xml \
+	target/etc/permissions/
+$SUDO cp -a \
+	blob/etc/preferred-apps \
+	target/etc/
+$SUDO cp -a \
+	blob/etc/updatecmds/google_generic_update.txt \
+	target/etc/updatecmds/
+if false; then
+# With this, fails to boot to GUI
+# The *.odex files are at fault, details need to be diagnosed
+	$SUDO cp -a \
+		blob/framework/com.google.* \
+		target/framework/
+else
+	$SUDO cp -a \
+		blob/framework/com.google.*.jar \
+		target/framework/
+fi
+# FIXME
+# Some of the stuff that exists in the Google build, but not in the Linaro build,
+# does not seem to have license issues (libvorbisencoder.so) - maybe we should just
+# build it inside the source tree to get better performance?
+$SUDO cp -a \
+	blob/lib/libearthmobile.so \
+	blob/lib/libfacelock_jni.so \
+	blob/lib/libfilterpack_facedetect.so \
+	blob/lib/libfrsdk.so \
+	blob/lib/libgcomm_jni.so \
+	blob/lib/libgoogle_recognizer_jni.so \
+	blob/lib/libpatts_engine_jni_api.so \
+	blob/lib/libsecril-client.so \
+	blob/lib/libspeexwrapper.so \
+	blob/lib/libvideochat_jni.so \
+	blob/lib/libvideochat_stabilize.so \
+	blob/lib/libvoicesearch.so \
+	blob/lib/libvorbisencoder.so \
+	target/lib/
+$SUDO cp -a \
+	blob/media/LMprec_508.emd \
+	blob/media/PFFprec_600.emd \
+	blob/media/bootanimation.zip \
+	blob/media/video \
+	target/media/
+$SUDO cp -a \
+	blob/media/audio/ringtones/RadiationOrchestration.ogg \
+	blob/media/audio/ringtones/RobotsforEveryone.ogg \
+	target/media/audio/ringtones/
+$SUDO cp -a \
+	blob/usr/srec/en-US \
+	target/usr/srec/
+$SUDO umount blob
+mkdir tmp
+$SUDO "`which make_ext4fs`" -s -l 512M -a system tmp/system.img target/
+cd tmp
+cp \
+	"$SRC"/boot.img \
+	"$SRC"/userdata.img \
+	../takju-jro03c/android-info.txt \
+	./
+
+# We don't currently have a Linaro recovery system, so let's use the
+# most commonly used good one...
+cp ../recovery-clockwork-touch-6.0.1.0-maguro.img \
+	recovery.img
+zip ../linaro-takju-jro03c.zip boot.img recovery.img system.img userdata.img android-info.txt
+cd ..
+
+FASTBOOT="`which fastboot 2>/dev/null`"
+if [ -n "$FASTBOOT" ]; then
+	FASTBOOT_SIZE="`ls -l /sbin/fastboot |awk '{ print $5; }'`"
+	if [ "$FASTBOOT_SIZE" -lt 1024 ]; then
+		# This is likely LSB fastboot -- a tool that reboots the
+		# machine without shutting down services...
+		# Let's not use that!
+		FASTBOOT=""
+	fi
+fi
+if [ -z "$FASTBOOT" ]; then
+	# Let's look for the Android SDK in various places...
+	for i in /opt/android-sdk-linux /usr/local/android-sdk-linux /usr/android-sdk-linux; do
+		if [ -e "$i/platform-tools/fastboot" ]; then
+			FASTBOOT="$i/platform-tools/fastboot"
+			break
+		fi
+	done
+fi
+
+echo
+echo "*******************************************************************************"
+echo
+echo "Merging non-free binaries complete."
+echo
+if [ -n "$FASTBOOT" ]; then
+	echo "Note that flashing a new firmware WILL DESTROY ALL DATA ON YOUR"
+	echo "PHONE."
+	echo
+	echo "Flash to phone (y/n)?"
+	read r
+	r="`echo $r |cut -b1 |tr A-Z a-z`"
+else
+	r="n"
+fi
+if [ "$r" != "y" ]; then
+	[ -z "$FASTBOOT" ] && FASTBOOT=fastboot
+	echo
+	echo "Boot your Galaxy Nexus into bootloader mode by powering it off"
+	echo "(remove the battery if you're unsure), then holding the volume up"
+	echo "and volume down keys at the same time while turning the phone on."
+	echo
+	echo "Use"
+	echo "	$SUDO $FASTBOOT oem unlock"
+	echo "	$SUDO $FASTBOOT -w update linaro-takju-jro03c.zip"
+	echo "to flash the image manually. Make sure you have the current"
+	echo "boot loader and radio firmware installed first."
+	echo
+	echo "Note that flashing a new firmware WILL DESTROY ALL DATA ON YOUR"
+	echo "PHONE."
+	echo
+	echo "Make sure you use the version of \"fastboot\" that comes with"
+	echo "the Android SDK -- LSB \"fastboot\" reboots your machine"
+	echo "instead."
+	exit 0
+fi
+
+echo
+echo "Boot your Galaxy Nexus into bootloader mode by powering it off"
+echo "(remove the battery if you're unsure), then holding the volume up"
+echo "and volume down keys at the same time while turning the phone on."
+echo
+# Expected to fail if the device is already unlocked
+$SUDO $FASTBOOT oem unlock || :
+$SUDO $FASTBOOT -w update linaro-takju-jro03c.zip
