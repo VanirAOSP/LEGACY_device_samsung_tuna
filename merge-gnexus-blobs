@@ -116,92 +116,6 @@ $SUDO cp -a \
 $SUDO cp -a \
 	blob/vendor/lib/*.so \
 	target/vendor/lib/
-# FIXME
-# Google builds also replace some APKs in /system/app - at some point, we
-# should determine what the differences are, and whether or not it makes
-# sense to copy over the Google versions...
-#	Browser -> BrowserGoogle
-#	Calendar -> CalendarGoogle
-#	DeskClock -> DeskClockGoogle
-#	Email -> EmailGoogle
-#	Exchange2 -> Exchange2Google
-#	Gallery2 -> GalleryGoogle
-#	LatinIME -> LatinImeGoogle
-#	Music -> Music2
-#	Tag -> TagGoogle
-#	VideoEditor -> VideoEditorGoogle
-$SUDO cp -a \
-	blob/app/Books.* \
-	blob/app/ChromeBookmarksSyncAdapter.* \
-	blob/app/Currents.* \
-	blob/app/FaceLock.* \
-	blob/app/GenieWidget.* \
-	blob/app/Gmail.* \
-	blob/app/GmsCore.* \
-	blob/app/Google*.* \
-	blob/app/LatinImeDictionaryPack.* \
-	blob/app/Magazines.* \
-	blob/app/Maps.* \
-	blob/app/MediaUploader.* \
-	blob/app/NetworkLocation.* \
-	blob/app/OneTimeInitializer.* \
-	blob/app/Phonesky.* \
-	blob/app/PlusOne.* \
-	blob/app/SetupWizard.* \
-	blob/app/Stk.* \
-	blob/app/Street.* \
-	blob/app/Talk.* \
-	blob/app/Thinkfree.* \
-	blob/app/Velvet.* \
-	blob/app/Videos.* \
-	blob/app/VoiceSearchStub.* \
-	blob/app/Wallet.* \
-	blob/app/YouTube.* \
-	blob/app/talkback.* \
-	target/app/
-$SUDO cp -a \
-	blob/bin/fRom \
-	target/bin/
-$SUDO cp -a \
-	blob/etc/permissions/com.google.* \
-	blob/etc/permissions/features.xml \
-	target/etc/permissions/
-$SUDO cp -a \
-	blob/etc/preferred-apps \
-	target/etc/
-$SUDO cp -a \
-	blob/etc/updatecmds/google_generic_update.txt \
-	target/etc/updatecmds/
-if false; then
-# With this, fails to boot to GUI
-# The *.odex files are at fault, details need to be diagnosed
-	$SUDO cp -a \
-		blob/framework/com.google.* \
-		target/framework/
-else
-	$SUDO cp -a \
-		blob/framework/com.google.*.jar \
-		target/framework/
-fi
-# FIXME
-# Some of the stuff that exists in the Google build, but not in the Linaro build,
-# does not seem to have license issues (libvorbisencoder.so) - maybe we should just
-# build it inside the source tree to get better performance?
-$SUDO cp -a \
-	blob/lib/libearthmobile.so \
-	blob/lib/libfacelock_jni.so \
-	blob/lib/libfilterpack_facedetect.so \
-	blob/lib/libfrsdk.so \
-	blob/lib/libgcomm_jni.so \
-	blob/lib/libgoogle_recognizer_jni.so \
-	blob/lib/libpatts_engine_jni_api.so \
-	blob/lib/libsecril-client.so \
-	blob/lib/libspeexwrapper.so \
-	blob/lib/libvideochat_jni.so \
-	blob/lib/libvideochat_stabilize.so \
-	blob/lib/libvoicesearch.so \
-	blob/lib/libvorbisencoder.so \
-	target/lib/
 $SUDO cp -a \
 	blob/media/LMprec_508.emd \
 	blob/media/PFFprec_600.emd \
@@ -215,6 +129,92 @@ $SUDO cp -a \
 $SUDO cp -a \
 	blob/usr/srec/en-US \
 	target/usr/srec/
+# Copying off the Google apps currently doesn't work.
+# Don't enable WITH_GAPPS unless you're working on fixing it.
+if [ "$WITH_GAPPS" = "yes" ]; then
+	# FIXME
+	# Google builds also replace some APKs in /system/app - at some point, we
+	# should determine what the differences are, and whether or not it makes
+	# sense to copy over the Google versions...
+	#	Browser -> BrowserGoogle
+	#	Calendar -> CalendarGoogle
+	#	DeskClock -> DeskClockGoogle
+	#	Email -> EmailGoogle
+	#	Exchange2 -> Exchange2Google
+	#	Gallery2 -> GalleryGoogle
+	#	LatinIME -> LatinImeGoogle
+	#	Music -> Music2
+	#	Tag -> TagGoogle
+	#	VideoEditor -> VideoEditorGoogle
+	$SUDO cp -a \
+		blob/app/Books.* \
+		blob/app/ChromeBookmarksSyncAdapter.* \
+		blob/app/Currents.* \
+		blob/app/FaceLock.* \
+		blob/app/GenieWidget.* \
+		blob/app/Gmail.* \
+		blob/app/GmsCore.* \
+		blob/app/Google*.* \
+		blob/app/LatinImeDictionaryPack.* \
+		blob/app/Magazines.* \
+		blob/app/Maps.* \
+		blob/app/MediaUploader.* \
+		blob/app/NetworkLocation.* \
+		blob/app/OneTimeInitializer.* \
+		blob/app/Phonesky.* \
+		blob/app/PlusOne.* \
+		blob/app/SetupWizard.* \
+		blob/app/Stk.* \
+		blob/app/Street.* \
+		blob/app/Talk.* \
+		blob/app/Thinkfree.* \
+		blob/app/Velvet.* \
+		blob/app/Videos.* \
+		blob/app/VoiceSearchStub.* \
+		blob/app/Wallet.* \
+		blob/app/YouTube.* \
+		blob/app/talkback.* \
+		target/app/
+	$SUDO cp -a \
+		blob/bin/fRom \
+		target/bin/
+	$SUDO cp -a \
+		blob/etc/permissions/com.google.* \
+		blob/etc/permissions/features.xml \
+		target/etc/permissions/
+	$SUDO cp -a \
+		blob/etc/preferred-apps \
+		target/etc/
+	$SUDO cp -a \
+		blob/etc/updatecmds/google_generic_update.txt \
+		target/etc/updatecmds/
+	if false; then
+		# With this, fails to boot to GUI
+		# Details need to be diagnosed
+		$SUDO cp -a \
+			blob/framework/com.google.* \
+			target/framework/
+	fi
+	# FIXME
+	# Some of the stuff that exists in the Google build, but not in the Linaro build,
+	# does not seem to have license issues (libvorbisencoder.so) - maybe we should just
+	# build it inside the source tree to get better performance?
+	$SUDO cp -a \
+		blob/lib/libearthmobile.so \
+		blob/lib/libfacelock_jni.so \
+		blob/lib/libfilterpack_facedetect.so \
+		blob/lib/libfrsdk.so \
+		blob/lib/libgcomm_jni.so \
+		blob/lib/libgoogle_recognizer_jni.so \
+		blob/lib/libpatts_engine_jni_api.so \
+		blob/lib/libsecril-client.so \
+		blob/lib/libspeexwrapper.so \
+		blob/lib/libvideochat_jni.so \
+		blob/lib/libvideochat_stabilize.so \
+		blob/lib/libvoicesearch.so \
+		blob/lib/libvorbisencoder.so \
+		target/lib/
+fi
 $SUDO umount blob
 mkdir tmp
 $SUDO "`which make_ext4fs`" -s -l 512M -a system tmp/system.img target/
