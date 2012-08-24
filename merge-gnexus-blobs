@@ -259,7 +259,7 @@ echo "Merging non-free binaries complete."
 echo
 if [ -n "$FASTBOOT" ]; then
 	echo "Note that flashing a new firmware WILL DESTROY ALL DATA ON YOUR"
-	echo "PHONE."
+	echo "PHONE and VOID YOUR WARRANTY."
 	echo
 	echo "Flash to phone (y/n)?"
 	read r
@@ -281,7 +281,7 @@ if [ "$r" != "y" ]; then
 	echo "boot loader and radio firmware installed first."
 	echo
 	echo "Note that flashing a new firmware WILL DESTROY ALL DATA ON YOUR"
-	echo "PHONE."
+	echo "PHONE and VOID YOUR WARRANTY."
 	echo
 	echo "Make sure you use the version of \"fastboot\" that comes with"
 	echo "the Android SDK -- LSB \"fastboot\" reboots your machine"
