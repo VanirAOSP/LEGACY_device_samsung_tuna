@@ -24,7 +24,7 @@ if [ -z "$SRC" ]; then
 	exit 1
 fi
 if [ "`id -u`" != 0 ]; then
-	SUDO="`which sudo`"
+	SUDO="`which sudo || :`"
 	[ -z "$SUDO" ] && SUDO="su -c"
 else
 	SUDO=""
@@ -232,7 +232,7 @@ cp ../recovery-clockwork-touch-6.0.1.0-maguro.img \
 zip ../linaro-takju-jro03c.zip boot.img recovery.img system.img userdata.img android-info.txt
 cd ..
 
-FASTBOOT="`which fastboot 2>/dev/null`"
+FASTBOOT="`which fastboot 2>/dev/null || :`"
 if [ -n "$FASTBOOT" ]; then
 	FASTBOOT_SIZE="`ls -l /sbin/fastboot |awk '{ print $5; }'`"
 	if [ "$FASTBOOT_SIZE" -lt 1024 ]; then
