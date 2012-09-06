@@ -81,3 +81,7 @@ BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 
 BOARD_USES_SECURE_SERVICES := true
+
+## More reliable audio focus
+BOARD_HAS_SAMSUNG_VOLUME_BUG := true
+
