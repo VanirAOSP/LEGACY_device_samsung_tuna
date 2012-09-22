@@ -130,13 +130,13 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
      * Return it to previous value when screen changes from off to on.
      * CPU 0 and 1 share a cpufreq policy.
      */
-     
-    char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
-    int screen_off_max, scaling_max;
 
     //screen state has changed since last call
     if (on != previous_state)
-    {        
+    {           
+        char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
+        int screen_off_max, scaling_max;
+
         previous_state = on;
         
         //read value of screen-off max from sysfs, and convert to int for comparison
