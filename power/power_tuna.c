@@ -18,6 +18,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #define LOG_TAG "Tuna PowerHAL"
 #include <utils/Log.h>
@@ -25,7 +28,18 @@
 #include <hardware/hardware.h>
 #include <hardware/power.h>
 
+#define SCALINGMAXFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+#define SCREENOFFMAXFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq"
 #define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
+
+#define MAX_BUF_SZ	10
+
+/* initialize to something safe */
+static char screen_off_max_freq[MAX_BUF_SZ] = "700000";
+static char scaling_max_freq[MAX_BUF_SZ] = "1200000";
+static char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
+static char buf[80];
+static int previous_state = 1;
 
 struct tuna_power_module {
     struct power_module base;
@@ -34,13 +48,12 @@ struct tuna_power_module {
     int boostpulse_warned;
 };
 
-static void sysfs_write(char *path, char *s)
-{
-    char buf[80];
+static void sysfs_write(char *path, char *s, int l)
+{    
     int len;
     int fd = open(path, O_WRONLY);
 
-    if (fd < 0) {
+    if (fd < 0) {        
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error opening %s: %s\n", path, buf);
         return;
@@ -55,29 +68,43 @@ static void sysfs_write(char *path, char *s)
     close(fd);
 }
 
+int sysfs_read(const char *path, char *buf, size_t size)
+{
+	int fd, len;
+
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		return -1;
+
+	do {
+		len = read(fd, buf, size);
+	} while (len < 0 && errno == EINTR);
+
+	close(fd);
+
+	return len;
+}
+
 static void tuna_power_init(struct power_module *module)
 {
     /*
      * cpufreq interactive governor: timer 20ms, min sample 60ms,
      * hispeed 700MHz at load 50%.
      */
-
     sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/timer_rate",
-                "20000");
+                "20000", 6);
     sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/min_sample_time",
-                "60000");
+                "60000", 6);
     sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/hispeed_freq",
-                "700000");
+                "700000", 7);
     sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load",
-                "50");
+                "50", 3);
     sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay",
-                "100000");
+                "100000", 7);
 }
 
 static int boostpulse_open(struct tuna_power_module *tuna)
 {
-    char buf[80];
-
     pthread_mutex_lock(&tuna->lock);
 
     if (tuna->boostpulse_fd < 0) {
@@ -98,20 +125,50 @@ static int boostpulse_open(struct tuna_power_module *tuna)
 
 static void tuna_power_set_interactive(struct power_module *module, int on)
 {
-    /*
-     * Lower maximum frequency when screen is off.  CPU 0 and 1 share a
-     * cpufreq policy.
-     */
+    memset(buf_screen_off_max, 0, MAX_BUF_SZ);
+    memset(buf_scaling_max, 0, MAX_BUF_SZ);
+    int screen_off_max=0, scaling_max=0;
 
-    sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-                on ? "1200000" : "700000");
+    //screen state has changed since last call
+    if (on != previous_state)
+    {        
+        previous_state = on;
+        
+        //read value of screen-off max from sysfs, and convert to int for comparison
+        if (sysfs_read(SCREENOFFMAXFREQ_PATH, buf_screen_off_max, sizeof(buf_screen_off_max)) != -1)
+            screen_off_max = atoi(buf_screen_off_max);
+
+        ALOGI("Read %d from screen_off_max", screen_off_max);
+            
+        //read value of max from sysfs, and convert to int for comparison
+        if (sysfs_read(SCALINGMAXFREQ_PATH, buf_scaling_max, sizeof(buf_scaling_max)) != -1)
+            scaling_max = atoi(buf_scaling_max);
+                   
+        ALOGI("Read %d from scaling_max", screen_off_max);
+
+        //the largest of scaling_max and screen_off_max is truly the value of the CPU maximum frequency
+        //  ... so write it where it belongs.
+        if (scaling_max > screen_off_max)
+            memcpy(scaling_max_freq, 
+               (scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max,
+               strlen((scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max));
+               
+        int towrite = strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max);
+   
+        //if screen_off_max_freq is 0, use scaling_max_freq in its place 
+        memcpy(screen_off_max_freq, 
+               (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
+               towrite);
+ 
+        //write the values back... except for SCREENOFFMAXFREQ_PATH, because we didn't change it.
+        sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq, towrite);
+    }
 }
 
 static void tuna_power_hint(struct power_module *module, power_hint_t hint,
                             void *data)
 {
     struct tuna_power_module *tuna = (struct tuna_power_module *) module;
-    char buf[80];
     int len;
     int duration = 1;
 
