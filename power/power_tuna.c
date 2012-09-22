@@ -34,7 +34,9 @@
 /* initialize to something safe */
 static char screen_off_max_freq[MAX_BUF_SZ] = "700000";
 static char scaling_max_freq[MAX_BUF_SZ] = "1200000";
-static int previous_state = 1;
+
+/* for tracking previous screen state */
+static int previous_state = 0;
 
 struct tuna_power_module {
     struct power_module base;
@@ -123,6 +125,12 @@ static int boostpulse_open(struct tuna_power_module *tuna)
 
 static void tuna_power_set_interactive(struct power_module *module, int on)
 {
+    /*
+     * Lower maximum frequency when screen changes from on to off.
+     * Return it to previous value when screen changes from off to on.
+     * CPU 0 and 1 share a cpufreq policy.
+     */
+     
     char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
     int screen_off_max, scaling_max;
 
@@ -139,19 +147,20 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
         if (sysfs_read(SCALINGMAXFREQ_PATH, buf_scaling_max, sizeof(buf_scaling_max)) != -1)
             scaling_max = atoi(buf_scaling_max);
                    
-        //the largest of scaling_max and screen_off_max is truly the value of the CPU maximum frequency
-        //  ... so write it where it belongs.
+        /* If scaling_max_freq > screen_off_max_freq, then scaling_max_freq is really the maximum frequency, so save it for the next time the screen comes on.
+         * If screen_off_max_freq == 0, then we're just going to write our saved scalin_max_freq back to sysfs no matter what
+         * If scaling_max_freq == screen_off_max_freq, then scaling_max_freq has the screen_off_max in it, so DON'T SAVE IT TO OUR MAX VARIABLE!
+         */
         if (scaling_max > screen_off_max)
             memcpy(scaling_max_freq, 
                (scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max,
                strlen((scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max));
                   
-        //if screen_off_max_freq is 0, use scaling_max_freq in its place 
         memcpy(screen_off_max_freq, 
                (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
                strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max));
  
-        //write the values back... except for SCREENOFFMAXFREQ_PATH, because we didn't change it.
+        //write the appropriate value for scaling_max back to sysfs
         sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq);
     }
 }
