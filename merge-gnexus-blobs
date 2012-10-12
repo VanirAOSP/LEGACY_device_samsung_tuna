@@ -129,6 +129,9 @@ $SUDO cp -a \
 $SUDO cp -a \
 	blob/usr/srec/en-US \
 	target/usr/srec/
+$SUDO cp -a \
+	blob/lib/libsecril-client.so \
+	target/lib/
 # Copying off the Google apps currently doesn't work.
 # Don't enable WITH_GAPPS unless you're working on fixing it.
 if [ "$WITH_GAPPS" = "yes" ]; then
@@ -207,7 +210,6 @@ if [ "$WITH_GAPPS" = "yes" ]; then
 		blob/lib/libgcomm_jni.so \
 		blob/lib/libgoogle_recognizer_jni.so \
 		blob/lib/libpatts_engine_jni_api.so \
-		blob/lib/libsecril-client.so \
 		blob/lib/libspeexwrapper.so \
 		blob/lib/libvideochat_jni.so \
 		blob/lib/libvideochat_stabilize.so \
