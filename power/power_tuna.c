@@ -160,6 +160,10 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
                (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
                strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max));
  
+ 		//write the appropriate value for screen_off_max back to sysfs
+ 		//(this will happen when screen_off_max is 0 on sysfs... but it should probably be 700000)
+ 		sysfs_write(SCREENOFFMAXFREQ_PATH, screen_off_max_freq);
+ 
         //write the appropriate value for scaling_max back to sysfs
         sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq);
     }
