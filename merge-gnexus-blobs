@@ -69,7 +69,9 @@ if ! which simg2img &>/dev/null; then
 			git clone http://android.git.linaro.org/platform/system/extras.git
 		git clone git://android.git.linaro.org/platform/system/core.git || \
 			git clone http://android.git.linaro.org/platform/system/core.git
-		cd extras
+		cd core
+		git checkout -b jb linaro_android_4.1.2
+		cd ../extras
 		git checkout -b jb android-4.1.2_r1
 		cd ext4_utils
 		gcc $CFLAGS -o simg2img simg2img.c sparse_crc32.c
@@ -93,6 +95,7 @@ $SUDO mount -t ext4 -o loop,ro blob.ext4 blob
 $SUDO rm -rf target tmp
 mkdir target
 $SUDO cp -a linaro/* target/
+[ -d /tmp/android-native-toolchain ] && $SUDO cp -a /tmp/android-native-toolchain/system/* target/
 $SUDO umount linaro
 $SUDO cp -a \
 	blob/vendor/pittpatt \
