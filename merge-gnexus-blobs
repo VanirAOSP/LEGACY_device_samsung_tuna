@@ -70,7 +70,7 @@ if ! which simg2img &>/dev/null; then
 		git clone git://android.git.linaro.org/platform/system/core.git || \
 			git clone http://android.git.linaro.org/platform/system/core.git
 		cd core
-		git checkout -b jb linaro_android_4.1.2
+		git checkout -b jb origin/linaro_android_4.1.2
 		cd ../extras
 		git checkout -b jb android-4.1.2_r1
 		cd ext4_utils
