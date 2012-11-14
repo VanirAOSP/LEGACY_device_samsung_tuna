@@ -70,25 +70,25 @@ if ! which simg2img &>/dev/null; then
 		git clone git://android.git.linaro.org/platform/system/core.git || \
 			git clone http://android.git.linaro.org/platform/system/core.git
 		cd core
-		git checkout -b jb origin/linaro_android_4.1.2
+		git checkout -b jb origin/linaro_android_4.2
 		cd ../extras
-		git checkout -b jb android-4.1.2_r1
+		git checkout -b jb android-4.2_r1
 		cd ext4_utils
 		gcc $CFLAGS -o simg2img simg2img.c sparse_crc32.c
 		gcc $CFLAGS -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c backed_block.c output_file.c contents.c extent.c indirect.c uuid.c sha1.c sparse_crc32.c wipe.c -lz
 		cd ../..
 	fi
 fi
-[ -e takju-jzo54k-factory-92830c0b.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jzo54k-factory-92830c0b.tgz
-[ -d takju-jzo54k ] || tar xf takju-jzo54k-factory-92830c0b.tgz
+[ -e takju-jop40c-factory-1a47c890.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jop40c-factory-1a47c890.tgz
+[ -d takju-jop40c ] || tar xf takju-jop40c-factory-1a47c890.tgz
 [ -e recovery-clockwork-touch-6.0.1.0-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.1.0-maguro.img
-cd takju-jzo54k
+cd takju-jop40c
 if [ ! -e system.img ]; then
-	unzip image-takju-jzo54k.zip
+	unzip image-takju-jop40c.zip
 fi
 cd ..
 simg2img "$SRC"/system.img linaro.ext4
-simg2img takju-jzo54k/system.img blob.ext4
+simg2img takju-jop40c/system.img blob.ext4
 mkdir -p blob linaro system
 $SUDO mount -t ext4 -o loop,ro linaro.ext4 linaro
 $SUDO mount -t ext4 -o loop,ro blob.ext4 blob
@@ -227,14 +227,14 @@ cd tmp
 cp \
 	"$SRC"/boot.img \
 	"$SRC"/userdata.img \
-	../takju-jzo54k/android-info.txt \
+	../takju-jop40c/android-info.txt \
 	./
 
 # We don't currently have a Linaro recovery system, so let's use the
 # most commonly used good one...
 cp ../recovery-clockwork-touch-6.0.1.0-maguro.img \
 	recovery.img
-zip ../linaro-takju-jzo54k.zip boot.img recovery.img system.img userdata.img android-info.txt
+zip ../linaro-takju-jop40c.zip boot.img recovery.img system.img userdata.img android-info.txt
 cd ..
 
 FASTBOOT="`which fastboot 2>/dev/null || :`"
@@ -281,7 +281,7 @@ if [ "$r" != "y" ]; then
 	echo
 	echo "Use"
 	echo "	$SUDO $FASTBOOT oem unlock"
-	echo "	$SUDO $FASTBOOT -w update linaro-takju-jzo54k.zip"
+	echo "	$SUDO $FASTBOOT -w update linaro-takju-jop40c.zip"
 	echo "to flash the image manually. Make sure you have the current"
 	echo "boot loader and radio firmware installed first."
 	echo
@@ -301,4 +301,4 @@ echo "and volume down keys at the same time while turning the phone on."
 echo
 # Expected to fail if the device is already unlocked
 $SUDO $FASTBOOT oem unlock || :
-$SUDO $FASTBOOT -w update linaro-takju-jzo54k.zip
+$SUDO $FASTBOOT -w update linaro-takju-jop40c.zip
