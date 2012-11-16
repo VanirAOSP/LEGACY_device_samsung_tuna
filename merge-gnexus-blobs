@@ -54,7 +54,7 @@ error() {
 trap error ERR
 WD="`pwd`"
 cd "`dirname $0`"
-export PATH="$PATH":"`pwd`"/extras/ext4_utils
+export PATH="$PATH":"`pwd`"/extras/ext4_utils:"`pwd`"/core/libsparse
 CFLAGS="-O2 -march=native -mtune=native -DANDROID -I`pwd`/core/include"
 # We don't need to touch YAFFS bits right now
 #if ! which unyaffs &>/dev/null; then
@@ -71,11 +71,12 @@ if ! which simg2img &>/dev/null; then
 			git clone http://android.git.linaro.org/platform/system/core.git
 		cd core
 		git checkout -b jb origin/linaro_android_4.2
-		cd ../extras
-		git checkout -b jb android-4.1.2_r1
+		cd libsparse
+		gcc $CFLAGS -Iinclude -o simg2img simg2img.c sparse_crc32.c sparse_read.c sparse.c sparse_err.c backed_block.c output_file.c -lz
+		cd ../../extras
+		git checkout -b jb android-4.2_r1
 		cd ext4_utils
-		gcc $CFLAGS -o simg2img simg2img.c sparse_crc32.c
-		gcc $CFLAGS -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c backed_block.c output_file.c contents.c extent.c indirect.c uuid.c sha1.c sparse_crc32.c wipe.c -lz
+		gcc $CFLAGS -I../../core/libsparse/include -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c contents.c extent.c indirect.c uuid.c sha1.c wipe.c ../../core/libsparse/backed_block.c ../../core/libsparse/output_file.c ../../core/libsparse/sparse_read.c ../../core/libsparse/sparse.c ../../core/libsparse/sparse_err.c ../../core/libsparse/sparse_crc32.c -lz
 		cd ../..
 	fi
 fi
