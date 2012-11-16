@@ -72,7 +72,7 @@ if ! which simg2img &>/dev/null; then
 		cd core
 		git checkout -b jb origin/linaro_android_4.2
 		cd ../extras
-		git checkout -b jb android-4.2_r1
+		git checkout -b jb android-4.1.2_r1
 		cd ext4_utils
 		gcc $CFLAGS -o simg2img simg2img.c sparse_crc32.c
 		gcc $CFLAGS -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c backed_block.c output_file.c contents.c extent.c indirect.c uuid.c sha1.c sparse_crc32.c wipe.c -lz
