@@ -40,7 +40,6 @@
 #include "ProximitySensor.h"
 #include "PressureSensor.h"
 
-
 /*****************************************************************************/
 
 #define DELAY_OUT_TIME 0x7FFFFFFF
@@ -94,7 +93,6 @@ static int numSensors = LOCAL_SENSORS;
 
 static int open_sensors(const struct hw_module_t* module, const char* id,
                         struct hw_device_t** device);
-
 
 static int sensors__get_sensors_list(struct sensors_module_t* module,
                                      struct sensor_t const** list)
@@ -388,5 +386,3 @@ static int open_sensors(const struct hw_module_t* module, const char* id,
 
     return status;
 }
-
-
