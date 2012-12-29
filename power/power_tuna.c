@@ -137,14 +137,10 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
         //read value of screen-off max from sysfs, and convert to int for comparison
         if (sysfs_read(SCREENOFFMAXFREQ_PATH, buf_screen_off_max, sizeof(buf_screen_off_max)) != -1)
             screen_off_max = atoi(buf_screen_off_max);
-
-        ALOGI("Read %d from screen_off_max", screen_off_max);
             
         //read value of max from sysfs, and convert to int for comparison
         if (sysfs_read(SCALINGMAXFREQ_PATH, buf_scaling_max, sizeof(buf_scaling_max)) != -1)
             scaling_max = atoi(buf_scaling_max);
-                   
-        ALOGI("Read %d from scaling_max", screen_off_max);
 
         //the largest of scaling_max and screen_off_max is truly the value of the CPU maximum frequency
         //  ... so write it where it belongs.
