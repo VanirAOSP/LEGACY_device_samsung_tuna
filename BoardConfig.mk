@@ -36,10 +36,13 @@ TARGET_NO_BOOTLOADER := true
 
 BOARD_KERNEL_BASE := 0x80000000
 # BOARD_KERNEL_CMDLINE :=
+TARGET_NO_KERNEL := false
+KERNEL_CONFIG := tuna_defconfig
 
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOARD_PLATFORM := omap4
 TARGET_BOOTLOADER_BOARD_NAME := tuna
+TARGET_USE_GATOR := true
 
 BOARD_EGL_CFG := device/samsung/tuna/egl.cfg
 BOARD_CREATE_TUNA_HDCP_KEYS_SYMLINK := true
@@ -91,6 +94,7 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 
 BOARD_USES_SECURE_SERVICES := true
 
+TARGET_EXTRA_CFLAGS := $(call cc-ifversion, -ge, 46, $(call cc-option,-mtune=cortex-a9,$(call cc-option,-mtune=cortex-a8)) $(call cc-option,-mcpu=cortex-a9,$(call cc-option,-mcpu=cortex-a8)))
+
 ## More reliable audio focus
 BOARD_HAS_SAMSUNG_VOLUME_BUG := true
-
