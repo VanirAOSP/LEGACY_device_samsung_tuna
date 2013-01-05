@@ -32,7 +32,7 @@
 #define SCREENOFFMAXFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq"
 #define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
 
-#define MAX_BUF_SZ	10
+#define MAX_BUF_SZ 10
 
 /* initialize to something safe */
 static char screen_off_max_freq[MAX_BUF_SZ] = "700000";
@@ -49,11 +49,11 @@ struct tuna_power_module {
 };
 
 static void sysfs_write(char *path, char *s, int l)
-{    
+{
     int len;
     int fd = open(path, O_WRONLY);
 
-    if (fd < 0) {        
+    if (fd < 0) {
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error opening %s: %s\n", path, buf);
         return;
@@ -70,19 +70,19 @@ static void sysfs_write(char *path, char *s, int l)
 
 int sysfs_read(const char *path, char *buf, size_t size)
 {
-	int fd, len;
+        int fd, len;
 
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-		return -1;
+        fd = open(path, O_RDONLY);
+        if (fd < 0)
+                return -1;
 
-	do {
-		len = read(fd, buf, size);
-	} while (len < 0 && errno == EINTR);
+        do {
+                len = read(fd, buf, size);
+        } while (len < 0 && errno == EINTR);
 
-	close(fd);
+        close(fd);
 
-	return len;
+        return len;
 }
 
 static void tuna_power_init(struct power_module *module)
@@ -131,13 +131,13 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
 
     //screen state has changed since last call
     if (on != previous_state)
-    {        
+    {
         previous_state = on;
-        
+
         //read value of screen-off max from sysfs, and convert to int for comparison
         if (sysfs_read(SCREENOFFMAXFREQ_PATH, buf_screen_off_max, sizeof(buf_screen_off_max)) != -1)
             screen_off_max = atoi(buf_screen_off_max);
-            
+
         //read value of max from sysfs, and convert to int for comparison
         if (sysfs_read(SCALINGMAXFREQ_PATH, buf_scaling_max, sizeof(buf_scaling_max)) != -1)
             scaling_max = atoi(buf_scaling_max);
@@ -148,14 +148,14 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
             memcpy(scaling_max_freq, 
                (scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max,
                strlen((scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max));
-               
+
         int towrite = strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max);
-   
-        //if screen_off_max_freq is 0, use scaling_max_freq in its place 
+
+        //if screen_off_max_freq is 0, use scaling_max_freq in its place
         memcpy(screen_off_max_freq, 
                (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
                towrite);
- 
+
         //write the values back... except for SCREENOFFMAXFREQ_PATH, because we didn't change it.
         sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq, towrite);
     }

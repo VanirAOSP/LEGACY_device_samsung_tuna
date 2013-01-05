@@ -40,7 +40,6 @@ __BEGIN_DECLS
 
 /*****************************************************************************/
 
-
 __END_DECLS
 
-#endif  /* ANDROID_SAMSUNG_SENSORS_H */
+#endif /* ANDROID_SAMSUNG_SENSORS_H */

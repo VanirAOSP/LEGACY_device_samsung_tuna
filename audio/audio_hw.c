@@ -106,7 +106,6 @@
 /* HDMI mixer controls */
 #define MIXER_MAXIMUM_LPCM_CHANNELS         "Maximum LPCM channels"
 
-
 /* ALSA cards for OMAP4 */
 #define CARD_OMAP4_ABE 0
 #define CARD_OMAP4_HDMI 1
@@ -709,7 +708,6 @@ channel_config_t in_aux_cnl_configs[NUM_IN_AUX_CNL_CONFIGS] = {
     { AUDIO_CHANNEL_IN_STEREO , AUDIO_CHANNEL_IN_RIGHT}
 };
 
-
 struct tuna_stream_in {
     struct audio_stream_in stream;
 
@@ -749,7 +747,6 @@ struct tuna_stream_in {
     struct tuna_audio_device *dev;
 };
 
-
 #define STRING_TO_ENUM(string) { #string, string }
 
 struct string_to_enum {
@@ -763,12 +760,10 @@ const struct string_to_enum out_channels_name_to_enum_table[] = {
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_7POINT1),
 };
 
-
 /**
  * NOTE: when multiple mutexes have to be acquired, always respect the following order:
  *        hw device > in stream > out stream
  */
-
 
 static void select_output_device(struct tuna_audio_device *adev);
 static void select_input_device(struct tuna_audio_device *adev);
@@ -1340,7 +1335,6 @@ static void select_input_device(struct tuna_audio_device *adev)
     else {
         /* Select front end */
 
-
         if ((adev->active_input != 0) && (adev->active_input->aux_channels)) {
             ALOGV("select input device(): multi-mic configuration main mic %s sub mic %s",
                   main_mic_on ? "ON" : "OFF", sub_mic_on ? "ON" : "OFF");
@@ -1364,7 +1358,6 @@ static void select_input_device(struct tuna_audio_device *adev)
             else
                 set_route_by_array(adev->mixer, mm_ul2_amic_left, 0);
         }
-
 
         /* Select back end */
         mixer_ctl_set_enum_by_string(adev->mixer_ctls.right_capture,
@@ -2895,7 +2888,6 @@ static void in_read_audio_effect_channel_configs(struct tuna_stream_in *in,
     memcpy(effect_info->channel_configs, (reply + 2), sizeof(channel_config_t) * reply[1]);
 }
 
-
 static uint32_t in_get_aux_channels(struct tuna_stream_in *in)
 {
     int i;
@@ -3156,7 +3148,6 @@ static int in_remove_audio_effect(const struct audio_stream *stream,
     in->preprocessors[in->num_preprocessors].num_channel_configs = 0;
     in->preprocessors[in->num_preprocessors].effect_itfe = NULL;
     in->preprocessors[in->num_preprocessors].channel_configs = NULL;
-
 
     /* check compatibility between main channel supported and possible auxiliary channels */
     in_update_aux_channels(in, NULL);

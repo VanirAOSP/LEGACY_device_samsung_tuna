@@ -131,7 +131,7 @@ struct sensors_poll_context_t {
 
 private:
     enum {
-        mpl               = 0,  //all mpl entries must be consecutive and in this order
+        mpl = 0,  //all mpl entries must be consecutive and in this order
         mpl_accel,
         mpl_timer,
         light,

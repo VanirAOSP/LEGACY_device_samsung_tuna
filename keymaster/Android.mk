@@ -24,12 +24,12 @@ LOCAL_MODULE := keystore.tuna
 LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
 
 LOCAL_SRC_FILES := \
-	keymaster_tuna.cpp
+        keymaster_tuna.cpp
 
 LOCAL_C_INCLUDES := \
-	libcore/include \
-	external/openssl/include \
-	hardware/ti/omap4xxx/security/tf_sdk/include
+        libcore/include \
+        external/openssl/include \
+        hardware/ti/omap4xxx/security/tf_sdk/include
 
 LOCAL_CFLAGS := -fvisibility=hidden -Wall -Werror
 

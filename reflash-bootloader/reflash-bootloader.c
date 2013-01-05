@@ -25,10 +25,10 @@
 #include <sys/reboot.h>
 #include <sys/stat.h>
 
-#define error(s, a...)                          \
-    {                                           \
-        printf("error: " s "\n", ##a);          \
-        exit(-1);                               \
+#define error(s, a...)                 \
+    {                                  \
+        printf("error: " s "\n", ##a); \
+        exit(-1);                      \
     }
 
 #define error_errno(s, a...) error(s ": %s", ##a, strerror(errno))

@@ -143,7 +143,6 @@ int get_specification() {
   return spec;
 }
 
-
 // Four different xloaders are supported by bootloader.img:
 // 4460 EMU, 4460 HS (eng), 4460 HS (prod), 4430 HS.
 // The layout of the bootloader.img is:
@@ -187,7 +186,6 @@ int write_pit_partition_table(const char* image_data,
   int close_status = 0;
   int to_write;
   const char* curr;
-
 
   int mmcfd = open(MMC_LOCATION, O_RDWR);
   if (mmcfd < 0) {

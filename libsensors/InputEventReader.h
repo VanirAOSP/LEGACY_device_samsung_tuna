@@ -45,4 +45,4 @@ public:
 
 /*****************************************************************************/
 
-#endif  /* ANDROID_INPUT_EVENT_READER_H */
+#endif /* ANDROID_INPUT_EVENT_READER_H */

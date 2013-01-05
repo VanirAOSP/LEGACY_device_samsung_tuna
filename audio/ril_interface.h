@@ -68,4 +68,3 @@ int ril_set_call_volume(struct ril_handle *ril, enum ril_sound_type sound_type,
 int ril_set_call_audio_path(struct ril_handle *ril, enum ril_audio_path path);
 void ril_register_set_wb_amr_callback(void *function, void *data);
 #endif
-

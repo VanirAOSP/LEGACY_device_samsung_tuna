@@ -38,13 +38,11 @@
 
 #include <utils/UniquePtr.h>
 
-
 /** The size of a key ID in bytes */
 #define ID_LENGTH 32
 
 /** The current stored key version. */
 const static uint32_t KEY_VERSION = 1;
-
 
 struct EVP_PKEY_Delete {
     void operator()(EVP_PKEY* p) const {
@@ -182,7 +180,6 @@ private:
     CK_OBJECT_HANDLE mHandle;
 };
 
-
 /**
  * Many OpenSSL APIs take ownership of an argument on success but don't free the argument
  * on failure. This means we need to tell our scoped pointers when we've transferred ownership,
@@ -190,7 +187,6 @@ private:
  */
 #define OWNERSHIP_TRANSFERRED(obj) \
     typeof (obj.release()) _dummy __attribute__((unused)) = obj.release()
-
 
 /*
  * Checks this thread's OpenSSL error queue and logs if
@@ -208,7 +204,6 @@ static void logOpenSSLError(const char* location) {
     ERR_clear_error();
     ERR_remove_state(0);
 }
-
 
 /**
  * Convert from OpenSSL's BIGNUM format to TEE's Big Integer format.
@@ -488,7 +483,6 @@ static int tee_import_keypair(const keymaster_device_t* dev,
         ALOGW("Could not convert private exponent");
         return -1;
     }
-
 
     /*
      * Normally we need:

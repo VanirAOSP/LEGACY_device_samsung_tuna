@@ -60,7 +60,6 @@ class TunaUI : public ScreenRecoveryUI {
     int consecutive_power_keys;
 };
 
-
 class TunaDevice : public Device {
   public:
     TunaDevice() :
