@@ -70,11 +70,11 @@ if ! which simg2img &>/dev/null; then
 		git clone git://android.git.linaro.org/platform/system/core.git || \
 			git clone http://android.git.linaro.org/platform/system/core.git
 		cd core
-		git checkout -b jb origin/linaro_android_4.2
+		git checkout -b jb origin/linaro_android_4.2.1
 		cd libsparse
 		gcc $CFLAGS -Iinclude -o simg2img simg2img.c sparse_crc32.c sparse_read.c sparse.c sparse_err.c backed_block.c output_file.c -lz
 		cd ../../extras
-		git checkout -b jb android-4.2_r1
+		git checkout -b jb android-4.2.1_r1
 		cd ext4_utils
 		gcc $CFLAGS -I../../core/libsparse/include -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c contents.c extent.c indirect.c uuid.c sha1.c wipe.c ../../core/libsparse/backed_block.c ../../core/libsparse/output_file.c ../../core/libsparse/sparse_read.c ../../core/libsparse/sparse.c ../../core/libsparse/sparse_err.c ../../core/libsparse/sparse_crc32.c -lz
 		cd ../..
@@ -82,7 +82,7 @@ if ! which simg2img &>/dev/null; then
 fi
 [ -e takju-jop40d-factory-e4d13f14.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jop40d-factory-e4d13f14.tgz
 [ -d takju-jop40d ] || tar xf takju-jop40d-factory-e4d13f14.tgz
-[ -e recovery-clockwork-touch-6.0.1.5-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.1.5-maguro.img
+[ -e recovery-clockwork-touch-6.0.2.3-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.2.3-maguro.img
 cd takju-jop40d
 if [ ! -e system.img ]; then
 	unzip image-takju-jop40d.zip
@@ -233,7 +233,7 @@ cp \
 
 # We don't currently have a Linaro recovery system, so let's use the
 # most commonly used good one...
-cp ../recovery-clockwork-touch-6.0.1.0-maguro.img \
+cp ../recovery-clockwork-touch-6.0.2.3-maguro.img \
 	recovery.img
 zip ../linaro-takju-jop40d.zip boot.img recovery.img system.img userdata.img android-info.txt
 cd ..
