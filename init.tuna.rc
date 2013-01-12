@@ -237,12 +237,18 @@ service iprenew_bnep0 /system/bin/dhcpcd -n
         disabled
         oneshot
 
-# bugreport is triggered by holding down volume down, volume up and power
-#service bugreport /system/bin/bugmailer.sh -v
-#        class main
-#        disabled
-#        oneshot
-#        keycodes 114 115 116
+# bugreport is triggered by our reboot menu or picking an options in the development settings
+service bugreport /system/bin/bugmailer.sh -v
+        class main
+        disabled
+        oneshot
+
+# press power/volup/voldown to reboot the phone (for those "oh shit" situations)
+service ohshitbutton /system/bin/reboot
+        class main
+        disabled
+        oneshot
+        keycodes 114 115 116
 
 service battery_charger /charger
         class charger
