@@ -108,6 +108,53 @@ public class Utils {
     }
 
     /**
+     * Write a byte array to the specified file.
+     *
+     * @param filename The filename
+     * @param bytes The bytes to be written
+     */
+    public static void writeValue(String filename, byte[] bytes) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(new File(filename), false);
+            fos.write(bytes);
+            fos.flush();
+            // fos.getFD().sync();
+        } catch (FileNotFoundException ex) {
+            Log.w(TAG, "file " + filename + " not found: " + ex);
+        } catch (SyncFailedException ex) {
+            Log.w(TAG, "file " + filename + " sync failed: " + ex);
+        } catch (IOException ex) {
+            Log.w(TAG, "IOException trying to sync " + filename + ": " + ex);
+        } catch (RuntimeException ex) {
+            Log.w(TAG, "exception while syncing file: ", ex);
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException ex) {
+                    Log.w(TAG, "IOException while closing synced file: ", ex);
+                } catch (RuntimeException ex) {
+                    Log.w(TAG, "exception while closing file: ", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete the specified file.
+     *
+     * @param filename The filename
+     */
+    public static void deleteFile(String filename) {
+        try {
+            new File(filename).delete();
+        } catch (RuntimeException ex) {
+            Log.w(TAG, "exception while deleting file: ", ex);
+        }
+    }
+
+    /**
      * Write the "color value" to the specified file. The value is scaled from
      * an integer to an unsigned integer by multiplying by 2.
      * 

@@ -27,6 +27,10 @@
             android:key="vibrator_tuning"
             android:title="@string/vibrator_tuning_title_head"
             android:summary="@string/vibrator_tuning_summary_head" />
+        <com.cyanogenmod.settings.device.AccelCalibration
+            android:key="accel_calibration"
+            android:title="@string/accel_calibration_title_head"
+            android:summary="@string/accel_calibration_summary_head" />
     </PreferenceCategory>
 
     <!-- GPU -->
