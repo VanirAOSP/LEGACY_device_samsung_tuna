@@ -47,7 +47,7 @@ public class VibratorTuningPreference extends DialogPreference implements OnClic
     };
 
     private static final String[] FILE_PATH = new String[] {
-            "/sys/vibrator/pwmvalue",
+            "/sys/vibe/pwmduty",
     };
 
     private vibratorSeekBar mSeekBars[] = new vibratorSeekBar[1];

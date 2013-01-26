@@ -50,9 +50,9 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
     };
 
     private static final String[] FILE_PATH = new String[] {
-            "/sys/class/misc/samoled_color/red_multiplier",
-            "/sys/class/misc/samoled_color/green_multiplier",
-            "/sys/class/misc/samoled_color/blue_multiplier"
+            "/sys/class/misc/colorcontrol/red_multiplier",
+            "/sys/class/misc/colorcontrol/green_multiplier",
+            "/sys/class/misc/colorcontrol/blue_multiplier"
     };
 
     private ColorSeekBar mSeekBars[] = new ColorSeekBar[3];

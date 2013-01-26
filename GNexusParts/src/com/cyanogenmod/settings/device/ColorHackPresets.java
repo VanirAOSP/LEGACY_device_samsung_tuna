@@ -38,16 +38,16 @@ public class ColorHackPresets extends DialogPreference implements OnClickListene
     private static final String TAG = "PRESETS...";
 
     private static final String[] FILE_PATH_GAMMA = new String[] {
-            "/sys/class/misc/samoled_color/red_v1_offset",
-            "/sys/class/misc/samoled_color/green_v1_offset",
-            "/sys/class/misc/samoled_color/blue_v1_offset",
+            "/sys/class/misc/colorcontrol/red_v1_offset",
+            "/sys/class/misc/colorcontrol/green_v1_offset",
+            "/sys/class/misc/colorcontrol/blue_v1_offset",
             "/sys/devices/platform/omapdss/manager0/gamma"
     };
 
     private static final String[] FILE_PATH_MULTI = new String[] {
-            "/sys/class/misc/samoled_color/red_multiplier",
-            "/sys/class/misc/samoled_color/green_multiplier",
-            "/sys/class/misc/samoled_color/blue_multiplier"
+            "/sys/class/misc/colorcontrol/red_multiplier",
+            "/sys/class/misc/colorcontrol/green_multiplier",
+            "/sys/class/misc/colorcontrol/blue_multiplier"
     };
 
     // Align MAX_VALUE with Voodoo Control settings
