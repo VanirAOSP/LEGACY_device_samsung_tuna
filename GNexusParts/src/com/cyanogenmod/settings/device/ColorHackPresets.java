@@ -184,12 +184,12 @@ public class ColorHackPresets extends DialogPreference implements OnClickListene
     }
 
     private void Preset4() {
-        WriteMultiplier(0.7231, 0);
-        WriteMultiplier(0.7016, 1);
-        WriteMultiplier(0.6532, 2);
-        WriteGamma(-31, 0);
-        WriteGamma(-30, 1);
-        WriteGamma(-14, 2);
+        WriteMultiplier(1.0, 0);
+        WriteMultiplier(1.0, 1);
+        WriteMultiplier(1.0, 2);
+        WriteGamma(-6, 0);
+        WriteGamma(0, 1);
+        WriteGamma(7, 2);
         WriteGamma(0, 3);
     }
 
