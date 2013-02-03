@@ -37,10 +37,6 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
 
     private static final String TAG = "COLOR...";
 
-    enum Colors {
-        RED, GREEN, BLUE
-    };
-
     private static final int[] SEEKBAR_ID = new int[] {
             R.id.color_red_seekbar, R.id.color_green_seekbar, R.id.color_blue_seekbar
     };
@@ -49,11 +45,9 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
             R.id.color_red_value, R.id.color_green_value, R.id.color_blue_value
     };
 
-    private static final String[] FILE_PATH = new String[] {
-            "/sys/class/misc/colorcontrol/red_multiplier",
-            "/sys/class/misc/colorcontrol/green_multiplier",
-            "/sys/class/misc/colorcontrol/blue_multiplier"
-    };
+    private static final String FILE_PATH = "/sys/class/misc/colorcontrol/multiplier";
+
+    private static final UpdatePostpwner pwnage = new UpdatePostpwner(FILE_PATH);
 
     private ColorSeekBar mSeekBars[] = new ColorSeekBar[3];
 
@@ -68,6 +62,8 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
     public ColorTuningPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         
+        I2Color.Init();
+
         setDialogLayoutResource(R.layout.preference_dialog_color_tuning);
     }
 
@@ -80,7 +76,7 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
         for (int i = 0; i < SEEKBAR_ID.length; i++) {
             SeekBar seekBar = (SeekBar) view.findViewById(SEEKBAR_ID[i]);
             TextView valueDisplay = (TextView) view.findViewById(VALUE_DISPLAY_ID[i]);
-            mSeekBars[i] = new ColorSeekBar(seekBar, valueDisplay, FILE_PATH[i]);
+            mSeekBars[i] = new ColorSeekBar(seekBar, valueDisplay, pwnage, I2Color.Lookup[i]);
         }
         SetupButtonClickListeners(view);
     }
@@ -125,18 +121,22 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeColor", true);
-        for (String filePath : FILE_PATH) {
-            String sDefaultValue = Utils.readOneLine(filePath);
-            iValue = sharedPrefs.getInt(filePath, Integer.valueOf(sDefaultValue));
-            if (bFirstTime){
-                Utils.writeColor(filePath, MAX_VALUE);
-                Log.d(TAG, "restore default value: " +MAX_VALUE+ " File: " + filePath);
+
+        String sDefaultValue = Utils.readOneLine(FILE_PATH);
+
+        for(Colors c : Colors.values())
+        {
+            pwnage.InitializeMultiplier(c, MAX_VALUE);
+            iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
+            if (bFirstTime) {
+                Log.d(TAG, "restore default value: " +MAX_VALUE+ " File: " + pwnage.fakepaths[c.ordinal()]);
+                pwnage.writeColor(c, MAX_VALUE);
             }
-            else{
-                Utils.writeColor(filePath, iValue);
-                Log.d(TAG, "restore: iValue: " + iValue + " File: " + filePath);
+            else {
+                pwnage.writeColor(c,iValue);
             }
         }
+
         if (bFirstTime)
         {
             SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -151,14 +151,7 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
      * @return Whether color tuning is supported or not
      */
     public static boolean isSupported() {
-        boolean supported = true;
-        for (String filePath : FILE_PATH) {
-            if (!Utils.fileExists(filePath)) {
-                supported = false;
-            }
-        }
-
-        return supported;
+        return Utils.fileExists(FILE_PATH);
     }
 
     class ColorSeekBar implements SeekBar.OnSeekBarChangeListener {
@@ -171,23 +164,19 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
 
         private TextView mValueDisplay;
 
-        public ColorSeekBar(SeekBar seekBar, TextView valueDisplay, String filePath) {
-            int iValue;
+        private UpdatePostpwner pwnage;
+        private Colors mColor;
+
+        public ColorSeekBar(SeekBar seekBar, TextView valueDisplay, UpdatePostpwner pwn, Colors color) {
+            mColor = color;
+            pwnage = pwn;
 
             mSeekBar = seekBar;
             mValueDisplay = valueDisplay;
-            mFilePath = filePath;
 
             SharedPreferences sharedPreferences = getSharedPreferences();
 
-            // Read original value
-            if (Utils.fileExists(mFilePath)) {
-                String sDefaultValue = Utils.readOneLine(mFilePath);
-                iValue = (int) (Long.valueOf(sDefaultValue) / 2);
-            } else {
-                iValue = sharedPreferences.getInt(mFilePath, MAX_VALUE);
-            }
-            mOriginal = iValue;
+            mOriginal = pwn.InitializeMultiplier(color, MAX_VALUE);
 
             mSeekBar.setMax(MAX_VALUE);
             reset();
@@ -201,13 +190,13 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
 
         public void save() {
             Editor editor = getEditor();
-            editor.putInt(mFilePath, mSeekBar.getProgress());
+            editor.putInt(pwnage.fakepaths[mColor.ordinal()], mSeekBar.getProgress());
             editor.commit();
         }
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            Utils.writeColor(mFilePath, progress);
+            pwnage.writeColor(mColor, progress);
             updateValue(progress);
         }
 

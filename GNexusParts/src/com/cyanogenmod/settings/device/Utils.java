@@ -155,17 +155,6 @@ public class Utils {
     }
 
     /**
-     * Write the "color value" to the specified file. The value is scaled from
-     * an integer to an unsigned integer by multiplying by 2.
-     * 
-     * @param filename The filename
-     * @param value The value of max value Integer.MAX
-     */
-    public static void writeColor(String filename, int value) {
-        writeValue(filename, String.valueOf((long) value * 2));
-    }
-
-    /**
      * Check if the specified file exists.
      * 
      * @param filename The filename

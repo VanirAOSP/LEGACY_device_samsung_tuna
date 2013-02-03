@@ -37,18 +37,14 @@ public class ColorHackPresets extends DialogPreference implements OnClickListene
 
     private static final String TAG = "PRESETS...";
 
-    private static final String[] FILE_PATH_GAMMA = new String[] {
-            "/sys/class/misc/colorcontrol/red_v1_offset",
-            "/sys/class/misc/colorcontrol/green_v1_offset",
-            "/sys/class/misc/colorcontrol/blue_v1_offset",
-            "/sys/devices/platform/omapdss/manager0/gamma"
-    };
+    private static final String FILE_PATH_GAMMA = "/sys/class/misc/colorcontrol/v1_offset";
 
-    private static final String[] FILE_PATH_MULTI = new String[] {
-            "/sys/class/misc/colorcontrol/red_multiplier",
-            "/sys/class/misc/colorcontrol/green_multiplier",
-            "/sys/class/misc/colorcontrol/blue_multiplier"
-    };
+    private static final String GAMMA_PATH = "/sys/devices/platform/omapdss/manager0/gamma";
+
+    private static final String FILE_PATH_MULTI = "/sys/class/misc/colorcontrol/multiplier";
+
+    private static final UpdatePostpwner gammapwnage = new UpdatePostpwner(FILE_PATH_GAMMA);
+    private static final UpdatePostpwner multipwnage = new UpdatePostpwner(FILE_PATH_MULTI);;
 
     // Align MAX_VALUE with Voodoo Control settings
     private static final int MAX_VALUE = 2000000000;
@@ -93,18 +89,7 @@ public class ColorHackPresets extends DialogPreference implements OnClickListene
      * @return Whether color/gamma tuning is supported or not
      */
     public static boolean isSupported() {
-        boolean supported = true;
-        for (String filePath : FILE_PATH_MULTI) {
-            if (!Utils.fileExists(filePath)) {
-                supported = false;
-            }
-        }
-        for (String filePath : FILE_PATH_GAMMA) {
-            if (!Utils.fileExists(filePath)) {
-                supported = false;
-            }
-        }
-        return supported;
+        return Utils.fileExists(FILE_PATH_GAMMA) && Utils.fileExists(FILE_PATH_MULTI) && Utils.fileExists(GAMMA_PATH);
     }
 
     public void onClick(View v) {
@@ -134,27 +119,35 @@ public class ColorHackPresets extends DialogPreference implements OnClickListene
     private void WriteMultiplier(Double fValue , int iPos) {
         int iValue = (int) ((double) MAX_VALUE * fValue);
         int iValue2;
-        Utils.writeColor(FILE_PATH_MULTI[iPos], iValue);
+        Colors c = I2Color.Lookup[iPos];
+        multipwnage.writeValue(c, ""+iValue);
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        iValue2 = sharedPrefs.getInt(FILE_PATH_MULTI[iPos], iValue);
+        iValue2 = sharedPrefs.getInt(multipwnage.fakepaths[c.ordinal()], iValue);
         //storing to SharedPreferences because of reloaded @ startup
         Editor editor = getEditor();
-        editor.putInt(FILE_PATH_MULTI[iPos], iValue);
+        editor.putInt(multipwnage.fakepaths[c.ordinal()], iValue);
         editor.commit();
         Log.d(TAG, "Changing ColorMultiplier " +iPos+ " from:" +iValue2+ " to: " +iValue);
     }
 
-    
+
     private void WriteGamma(int iValue , int iPos) {
         int iValue2;
-        Utils.writeValue(FILE_PATH_GAMMA[iPos], String.valueOf((long) iValue));
-        
+        String path = GAMMA_PATH;
+        if (iPos == 3) {
+            Utils.writeValue(path, String.valueOf((long) iValue));
+        } else {
+            Colors c = I2Color.Lookup[iPos];
+            path = gammapwnage.fakepaths[c.ordinal()];
+            gammapwnage.writeValue(c, String.valueOf((long) iValue));
+        }
+
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        iValue2 = sharedPrefs.getInt(FILE_PATH_GAMMA[iPos], iValue);
+        iValue2 = sharedPrefs.getInt(path, iValue);
         //storing to SharedPreferences because of reloaded @ startup
         Editor editor = getEditor();
-        editor.putInt(FILE_PATH_GAMMA[iPos], iValue);
+        editor.putInt(path, iValue);
         editor.commit();
         Log.d(TAG, "Changing GammaValue " +iPos+ " from:" +iValue2+ " to: " +iValue);
     }

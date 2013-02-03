@@ -37,10 +37,6 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
 
     private static final String TAG = "GAMMA...";
 
-    enum Colors {
-        RED, GREEN, BLUE
-    };
-
     private static final int[] SEEKBAR_ID = new int[] {
             R.id.gamma_red_seekbar, R.id.gamma_green_seekbar, R.id.gamma_blue_seekbar, R.id.gamma_dss_seekbar
     };
@@ -49,12 +45,12 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
             R.id.gamma_red_value, R.id.gamma_green_value, R.id.gamma_blue_value, R.id.gamma_dss_value
     };
 
-    private static final String[] FILE_PATH = new String[] {
-            "/sys/class/misc/colorcontrol/red_v1_offset",
-            "/sys/class/misc/colorcontrol/green_v1_offset",
-            "/sys/class/misc/colorcontrol/blue_v1_offset",
-            "/sys/devices/platform/omapdss/manager0/gamma"
-    };
+    private static final String FILE_PATH = "/sys/class/misc/colorcontrol/v1_offset";
+    private static final String GAMMA_PATH = "/sys/devices/platform/omapdss/manager0/gamma";
+
+    private static final UpdatePostpwner pwnage = new UpdatePostpwner(FILE_PATH);
+
+    private static String[] mOffsets = new String[3];
 
     private GammaSeekBar mSeekBars[] = new GammaSeekBar[4];
 
@@ -70,6 +66,8 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
     public GammaTuningPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        I2Color.Init();
+
         setDialogLayoutResource(R.layout.preference_dialog_gamma_tuning);
     }
 
@@ -83,9 +81,9 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
             SeekBar seekBar = (SeekBar) view.findViewById(SEEKBAR_ID[i]);
             TextView valueDisplay = (TextView) view.findViewById(VALUE_DISPLAY_ID[i]);
             if (i < 3)
-                mSeekBars[i] = new GammaSeekBar(seekBar, valueDisplay, FILE_PATH[i], OFFSET_VALUE, MAX_VALUE);
+                mSeekBars[i] = new GammaSeekBar(seekBar, valueDisplay, pwnage, I2Color.Lookup[i], OFFSET_VALUE, MAX_VALUE);
             else
-                mSeekBars[i] = new GammaSeekBar(seekBar, valueDisplay, FILE_PATH[i], 0, 10);
+                mSeekBars[i] = new GammaSeekBar(seekBar, valueDisplay, GAMMA_PATH, 0, 10);
         }
         SetupButtonClickListeners(view);
     }
@@ -130,18 +128,35 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeGamma", true);
-        for (String filePath : FILE_PATH) {
-            String sDefaultValue = Utils.readOneLine(filePath);
-            iValue = sharedPrefs.getInt(filePath, Integer.valueOf(sDefaultValue));
-            if (bFirstTime){
-                Utils.writeValue(filePath, "0");
-                Log.d(TAG, "restore default value: 0 File: " + filePath);
+
+        //update offsets
+        String sDefaultValue = Utils.readOneLine(FILE_PATH);
+        for(Colors c : Colors.values())
+        {
+            pwnage.Initialize(c, OFFSET_VALUE, MAX_VALUE);
+            iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
+            if (bFirstTime) {
+                pwnage.writeValue(c, "0");
+                Log.d(TAG, "restore default value: 0 File: " + pwnage.fakepaths[c.ordinal()]);
             }
-            else{
-                Utils.writeValue(filePath, String.valueOf((long) iValue));
-                Log.d(TAG, "restore: iValue: " + iValue + " File: " + filePath);
+            else {
+                pwnage.writeValue(c,""+iValue);
+                Log.d(TAG, "restore: iValue: " + iValue + " File: " + pwnage.fakepaths[c.ordinal()]);
             }
         }
+
+        //update gamma
+        sDefaultValue = Utils.readOneLine(GAMMA_PATH);
+        iValue = sharedPrefs.getInt(GAMMA_PATH, Integer.valueOf(sDefaultValue));
+        if (bFirstTime){
+            Utils.writeValue(GAMMA_PATH, "0");
+            Log.d(TAG, "restore default value: 0 File: " + GAMMA_PATH);
+        }
+        else{
+            Utils.writeValue(GAMMA_PATH, ""+iValue);
+            Log.d(TAG, "restore: iValue: " + iValue + " File: " + GAMMA_PATH);
+        }
+
         if (bFirstTime)
         {
             SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -156,14 +171,7 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
      * @return Whether color tuning is supported or not
      */
     public static boolean isSupported() {
-        boolean supported = true;
-        for (String filePath : FILE_PATH) {
-            if (!Utils.fileExists(filePath)) {
-                supported = false;
-            }
-        }
-
-        return supported;
+        return Utils.fileExists(FILE_PATH) && Utils.fileExists(GAMMA_PATH);
     }
 
     class GammaSeekBar implements SeekBar.OnSeekBarChangeListener {
@@ -180,7 +188,28 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
 
         private int iMax;
 
-        public GammaSeekBar(SeekBar seekBar, TextView valueDisplay, String filePath, Integer offsetValue, Integer maxValue) {
+        private UpdatePostpwner pwnage = null;
+
+        private Colors mColor;
+
+        public GammaSeekBar(SeekBar seekBar, TextView valueDisplay, UpdatePostpwner pwn, Colors color, int offsetValue, int maxValue) {
+
+            mColor = color;
+            mSeekBar = seekBar;
+            mValueDisplay = valueDisplay;
+            iOffset = offsetValue;
+            iMax = maxValue;
+            pwnage = pwn;
+
+            mOriginal = pwn.Initialize(color, offsetValue, maxValue);
+
+            mSeekBar.setMax(iMax);
+
+            reset();
+            mSeekBar.setOnSeekBarChangeListener(this);
+        }
+
+        public GammaSeekBar(SeekBar seekBar, TextView valueDisplay, String filePath, int offsetValue, int maxValue) {
             int iValue;
 
             mSeekBar = seekBar;
@@ -217,7 +246,10 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
 
             iValue = mSeekBar.getProgress() - iOffset;
             Editor editor = getEditor();
-            editor.putInt(mFilePath, iValue);
+            if (pwnage == null)
+                editor.putInt(mFilePath, iValue);
+            else
+                editor.putInt(pwnage.fakepaths[mColor.ordinal()], iValue);
             editor.commit();
         }
 
@@ -226,7 +258,10 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
             int iValue;
 
             iValue = progress - iOffset;
-            Utils.writeValue(mFilePath, String.valueOf((long) iValue));
+            if (pwnage == null)
+                Utils.writeValue(mFilePath, ""+iValue);
+            else
+                pwnage.writeValue(mColor, ""+iValue);
             updateValue(iValue);
         }
 
