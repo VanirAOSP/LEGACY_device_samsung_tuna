@@ -3,7 +3,6 @@
         <item>Use vanir config\'s value (default)</item>
         <item>307.2 MHz</item>
         <item>384.0 MHz</item>
-        <item>486.0 MHz</item>
         <item>512.0 MHz</item>
     </string-array>
 
@@ -12,6 +11,5 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
     </string-array>
 </resources>
