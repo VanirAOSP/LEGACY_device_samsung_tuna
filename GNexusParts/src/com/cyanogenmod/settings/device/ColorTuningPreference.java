@@ -119,29 +119,32 @@ public class ColorTuningPreference extends DialogPreference implements OnClickLi
         
         int iValue;
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeColor", true);
-
-        String sDefaultValue = Utils.readOneLine(FILE_PATH);
-
-        for(Colors c : Colors.values())
+        if (sharedPrefs.getBoolean("override_initd_colors", true))
         {
-            pwnage.InitializeMultiplier(c, MAX_VALUE);
-            iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
-            if (bFirstTime) {
-                Log.d(TAG, "restore default value: " +MAX_VALUE+ " File: " + pwnage.fakepaths[c.ordinal()]);
-                pwnage.writeColor(c, MAX_VALUE);
-            }
-            else {
-                pwnage.writeColor(c,iValue);
-            }
-        }
+            Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeColor", true);
 
-        if (bFirstTime)
-        {
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-            editor.putBoolean("FirstTimeColor", false);
-            editor.commit();
+            String sDefaultValue = Utils.readOneLine(FILE_PATH);
+
+            for(Colors c : Colors.values())
+            {
+                pwnage.InitializeMultiplier(c, MAX_VALUE);
+                iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
+        
+                if (bFirstTime) {
+                    Log.d(TAG, "restore default value: " +MAX_VALUE+ " File: " + pwnage.fakepaths[c.ordinal()]);
+                    pwnage.writeColor(c, MAX_VALUE);
+                }
+                else {
+                    pwnage.writeColor(c,iValue);
+                }
+            }
+
+            if (bFirstTime)
+            {
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putBoolean("FirstTimeColor", false);
+                editor.commit();
+            }
         }
     }
 

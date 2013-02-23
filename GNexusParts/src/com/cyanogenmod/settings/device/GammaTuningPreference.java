@@ -127,41 +127,44 @@ public class GammaTuningPreference extends DialogPreference implements OnClickLi
         int iValue;
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeGamma", true);
-
-        //update offsets
-        String sDefaultValue = Utils.readOneLine(FILE_PATH);
-        for(Colors c : Colors.values())
+        if (sharedPrefs.getBoolean("override_initd_colors", true))
         {
-            pwnage.Initialize(c, OFFSET_VALUE, MAX_VALUE);
-            iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
-            if (bFirstTime) {
-                pwnage.writeValue(c, "0");
-                Log.d(TAG, "restore default value: 0 File: " + pwnage.fakepaths[c.ordinal()]);
-            }
-            else {
-                pwnage.writeValue(c,""+iValue);
-                Log.d(TAG, "restore: iValue: " + iValue + " File: " + pwnage.fakepaths[c.ordinal()]);
-            }
-        }
+            Boolean bFirstTime = sharedPrefs.getBoolean("FirstTimeGamma", true);
 
-        //update gamma
-        sDefaultValue = Utils.readOneLine(GAMMA_PATH);
-        iValue = sharedPrefs.getInt(GAMMA_PATH, Integer.valueOf(sDefaultValue));
-        if (bFirstTime){
-            Utils.writeValue(GAMMA_PATH, "0");
-            Log.d(TAG, "restore default value: 0 File: " + GAMMA_PATH);
-        }
-        else{
-            Utils.writeValue(GAMMA_PATH, ""+iValue);
-            Log.d(TAG, "restore: iValue: " + iValue + " File: " + GAMMA_PATH);
-        }
+            //update offsets
+            String sDefaultValue = Utils.readOneLine(FILE_PATH);
+            for(Colors c : Colors.values())
+            {
+                pwnage.Initialize(c, OFFSET_VALUE, MAX_VALUE);
+                iValue = sharedPrefs.getInt(pwnage.fakepaths[c.ordinal()], Integer.valueOf(pwnage.getDefault(c)));
+                if (bFirstTime) {
+                    pwnage.writeValue(c, "0");
+                    Log.d(TAG, "restore default value: 0 File: " + pwnage.fakepaths[c.ordinal()]);
+                }
+                else {
+                    pwnage.writeValue(c,""+iValue);
+                    Log.d(TAG, "restore: iValue: " + iValue + " File: " + pwnage.fakepaths[c.ordinal()]);
+                }
+            }
 
-        if (bFirstTime)
-        {
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-            editor.putBoolean("FirstTimeGamma", false);
-            editor.commit();
+            //update gamma
+            sDefaultValue = Utils.readOneLine(GAMMA_PATH);
+            iValue = sharedPrefs.getInt(GAMMA_PATH, Integer.valueOf(sDefaultValue));
+            if (bFirstTime){
+                Utils.writeValue(GAMMA_PATH, "0");
+                Log.d(TAG, "restore default value: 0 File: " + GAMMA_PATH);
+            }
+            else{
+                Utils.writeValue(GAMMA_PATH, ""+iValue);
+                Log.d(TAG, "restore: iValue: " + iValue + " File: " + GAMMA_PATH);
+            }
+
+            if (bFirstTime)
+            {
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putBoolean("FirstTimeGamma", false);
+                editor.commit();
+            }
         }
     }
 
