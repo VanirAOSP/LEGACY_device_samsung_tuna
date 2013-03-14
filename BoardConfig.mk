@@ -102,6 +102,3 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 BOARD_USES_SECURE_SERVICES := true
 
 TARGET_EXTRA_CFLAGS := $(call cc-ifversion, -ge, 46, $(call cc-option,-mtune=cortex-a9,$(call cc-option,-mtune=cortex-a8)) $(call cc-option,-mcpu=cortex-a9,$(call cc-option,-mcpu=cortex-a8)))
-
-## More reliable audio focus
-BOARD_HAS_SAMSUNG_VOLUME_BUG := true
