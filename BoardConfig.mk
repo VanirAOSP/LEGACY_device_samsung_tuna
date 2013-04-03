@@ -101,17 +101,14 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 
 BOARD_USES_SECURE_SERVICES := true
 
-<<<<<<< HEAD
 TARGET_EXTRA_CFLAGS := $(call cc-ifversion, -ge, 46, $(call cc-option,-mtune=cortex-a9,$(call cc-option,-mtune=cortex-a8)) $(call cc-option,-mcpu=cortex-a9,$(call cc-option,-mcpu=cortex-a8)))
 
 # VolumeHawtness
 BOARD_HAS_SAMSUNG_VOLUME_BUG := true  #ytf not
 
-=======
 BOARD_SEPOLICY_DIRS := \
         device/samsung/tuna/sepolicy
 
 BOARD_SEPOLICY_UNION := \
         genfs_contexts \
         file_contexts
->>>>>>> master
