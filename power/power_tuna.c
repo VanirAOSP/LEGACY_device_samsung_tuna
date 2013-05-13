@@ -111,13 +111,15 @@ static int boostpulse_open(struct tuna_power_module *tuna)
         tuna->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
 
         if (tuna->boostpulse_fd < 0) {
-            if (!tuna->boostpulse_warned) {
+            if (tuna->boostpulse_warned == 0) {
                 strerror_r(errno, buf, sizeof(buf));
                 ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
                 tuna->boostpulse_warned = 1;
             }
         }
     }
+    else
+        tuna->boostpulse_warned = 0;
 
     pthread_mutex_unlock(&tuna->lock);
     return tuna->boostpulse_fd;
@@ -179,9 +181,16 @@ static void tuna_power_hint(struct power_module *module, power_hint_t hint,
             len = write(tuna->boostpulse_fd, buf, strlen(buf));
 
             if (len < 0) {
-                strerror_r(errno, buf, sizeof(buf));
-                ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
-            }
+                //uh oh, prolly need a new FD next time around... screw locking, though... I'M TIGER WOODS!
+                tuna->boostpulse_fd = 0;
+
+                if (tuna->boostpulse_warned == 0) {
+                    strerror_r(errno, buf, sizeof(buf));
+                    ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
+                    tuna->boostpulse_warned = 1;
+                }
+            } else
+                tuna->boostpulse_warned = 0;
         }
         break;
 
