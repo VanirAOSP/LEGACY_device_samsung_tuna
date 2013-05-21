@@ -157,7 +157,7 @@ static void tuna_power_hint(struct power_module *module, power_hint_t hint,
 {
     struct tuna_power_module *tuna = (struct tuna_power_module *) module;
     int len;
-    int duration = 1;
+    int duration = 10000;
 
     switch (hint) {
     case POWER_HINT_INTERACTION:
