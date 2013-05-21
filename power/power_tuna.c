@@ -40,15 +40,15 @@ static char scaling_max_freq[MAX_BUF_SZ] = "1200000";
 static char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
 static char buf[80];
 static int previous_state = 1;
+static int boostpulse_warned = 0;
 
 struct tuna_power_module {
     struct power_module base;
     pthread_mutex_t lock;
     int boostpulse_fd;
-    int boostpulse_warned;
 };
 
-static void sysfs_write(char *path, char *s, int l)
+static void sysfs_write(char *path, char *s)
 {
     int len;
     int fd = open(path, O_WRONLY);
@@ -88,19 +88,8 @@ int sysfs_read(const char *path, char *buf, size_t size)
 static void tuna_power_init(struct power_module *module)
 {
     /*
-     * cpufreq interactive governor: timer 20ms, min sample 60ms,
-     * hispeed 700MHz at load 50%.
+     * assume the kernel knows what to do
      */
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/timer_rate",
-                "20000", 6);
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/min_sample_time",
-                "60000", 6);
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/hispeed_freq",
-                "700000", 7);
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load",
-                "50", 3);
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay",
-                "100000", 7);
 }
 
 static int boostpulse_open(struct tuna_power_module *tuna)
@@ -111,15 +100,17 @@ static int boostpulse_open(struct tuna_power_module *tuna)
         tuna->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
 
         if (tuna->boostpulse_fd < 0) {
-            if (tuna->boostpulse_warned == 0) {
+            if (boostpulse_warned == 0) {
                 strerror_r(errno, buf, sizeof(buf));
                 ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
-                tuna->boostpulse_warned = 1;
+                boostpulse_warned = 1;
             }
         }
+        else 
+            boostpulse_warned = 0;
     }
     else
-        tuna->boostpulse_warned = 0;
+        boostpulse_warned = 0;
 
     pthread_mutex_unlock(&tuna->lock);
     return tuna->boostpulse_fd;
@@ -151,15 +142,13 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
                (scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max,
                strlen((scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max));
 
-        int towrite = strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max);
-
         //if screen_off_max_freq is 0, use scaling_max_freq in its place
         memcpy(screen_off_max_freq, 
                (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
-               towrite);
+               strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max));
 
         //write the values back... except for SCREENOFFMAXFREQ_PATH, because we didn't change it.
-        sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq, towrite);
+        sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq);
     }
 }
 
@@ -176,7 +165,7 @@ static void tuna_power_hint(struct power_module *module, power_hint_t hint,
         if (data != NULL)
             duration = (int) data;
 
-        if (boostpulse_open(tuna) >= 0) {
+        if (boostpulse_open(tuna) > 0) {
             snprintf(buf, sizeof(buf), "%d", duration);
             len = write(tuna->boostpulse_fd, buf, strlen(buf));
 
@@ -184,13 +173,14 @@ static void tuna_power_hint(struct power_module *module, power_hint_t hint,
                 //uh oh, prolly need a new FD next time around... screw locking, though... I'M TIGER WOODS!
                 tuna->boostpulse_fd = 0;
 
-                if (tuna->boostpulse_warned == 0) {
+                if (boostpulse_warned == 0) {
                     strerror_r(errno, buf, sizeof(buf));
                     ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
-                    tuna->boostpulse_warned = 1;
+                    boostpulse_warned = 1;
                 }
-            } else
-                tuna->boostpulse_warned = 0;
+            } else {
+                boostpulse_warned = 0;
+            }
         }
         break;
 
@@ -225,5 +215,4 @@ struct tuna_power_module HAL_MODULE_INFO_SYM = {
 
     lock: PTHREAD_MUTEX_INITIALIZER,
     boostpulse_fd: -1,
-    boostpulse_warned: 0,
 };
