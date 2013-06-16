@@ -105,41 +105,42 @@ on fs
         # add symlink for HDCP key
         symlink /factory/hdcp.keys /system/vendor/firmware/hdcp.keys
 
-# nfc
-    setprop ro.nfc.port "COM4"
-    chmod 0600 /dev/ttyO3
-    chown nfc nfc /dev/ttyO3
-    chmod 0600 /sys/devices/platform/nfc-power/nfc_power
-    chown nfc nfc /sys/devices/platform/nfc-power/nfc_power
+        # allow to modify Wifi power behaviour in terms of battery/speed at sleep time
+        chown root system sys/module/bcmdhd/parameters/uiFastWifi
 
-# permissions for bluetooth.
-	setprop ro.bt.bdaddr_path "/factory/bluetooth/bt_addr"
-	chown bluetooth bluetooth ro.bt.bdaddr_path
-	chown bluetooth bluetooth /dev/ttyO1
-	chmod 0600 /dev/ttyO1
-	chmod 0660 /sys/class/rfkill/rfkill0/state
-	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-	restorecon /sys/class/rfkill/rfkill0/state
-	restorecon /sys/class/rfkill/rfkill0/type
+        # nfc
+        setprop ro.nfc.port "COM4"
+        chmod 0600 /dev/ttyO3
+        chown nfc nfc /dev/ttyO3
+        chmod 0600 /sys/devices/platform/nfc-power/nfc_power
+        chown nfc nfc /sys/devices/platform/nfc-power/nfc_power
 
-# backlight
-	chown system system /sys/class/backlight/s6e8aa0/brightness
+        # permissions for bluetooth.
+        setprop ro.bt.bdaddr_path "/factory/bluetooth/bt_addr"
+        chown bluetooth bluetooth ro.bt.bdaddr_path
+        chown bluetooth bluetooth /dev/ttyO1
+        chmod 0600 /dev/ttyO1
+        chmod 0660 /sys/class/rfkill/rfkill0/state
+        chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+        chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
 
-# leds
-	chown system system /dev/an30259a_leds
+        # backlight
+        chown system system /sys/class/backlight/s6e8aa0/brightness
 
-# for GPS
-    chown root system /sys/class/sec/gps/GPS_PWR_EN/value
-    chmod 0660 /sys/class/sec/gps/GPS_PWR_EN/value
-    chown root system /sys/class/sec/gps/GPS_nRST/value
-    chmod 0660 /sys/class/sec/gps/GPS_nRST/value
-    chown system system /proc/mcspi1_cs3_ctrl
-    chmod 0600 /proc/mcspi1_cs3_ctrl
+        # leds
+        chown system system /dev/an30259a_leds
 
-# ril control auto-suspend
-	chmod 0660 /sys/bus/usb/devices/usb1/power/control
-	chown radio radio /sys/bus/usb/devices/usb1/power/control
+        # for GPS
+        chown root system /sys/class/sec/gps/GPS_PWR_EN/value
+        chmod 0660 /sys/class/sec/gps/GPS_PWR_EN/value
+        chown root system /sys/class/sec/gps/GPS_nRST/value
+        chmod 0660 /sys/class/sec/gps/GPS_nRST/value
+        chown system system /proc/mcspi1_cs3_ctrl
+        chmod 0600 /proc/mcspi1_cs3_ctrl
+
+        # ril control auto-suspend
+        chmod 0660 /sys/bus/usb/devices/usb1/power/control
+        chown radio radio /sys/bus/usb/devices/usb1/power/control
 
 on property:persist.sys.tuna.off_mode=*
         write /d/pm_debug/enable_off_mode ${persist.sys.tuna.off_mode}
