@@ -18,9 +18,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #define LOG_TAG "Tuna PowerHAL"
 #include <utils/Log.h>
@@ -32,24 +29,22 @@
 #define SCREENOFFMAXFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq"
 #define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
 
-#define MAX_BUF_SZ 10
+#define MAX_BUF_SZ  10
 
 /* initialize to something safe */
 static char screen_off_max_freq[MAX_BUF_SZ] = "700000";
 static char scaling_max_freq[MAX_BUF_SZ] = "1200000";
-static char buf_screen_off_max[MAX_BUF_SZ], buf_scaling_max[MAX_BUF_SZ];
-static char buf[80];
-static int previous_state = 1;
-static int boostpulse_warned = 0;
 
 struct tuna_power_module {
     struct power_module base;
     pthread_mutex_t lock;
     int boostpulse_fd;
+    int boostpulse_warned;
 };
 
 static void sysfs_write(char *path, char *s)
 {
+    char buf[80];
     int len;
     int fd = open(path, O_WRONLY);
 
@@ -70,47 +65,43 @@ static void sysfs_write(char *path, char *s)
 
 int sysfs_read(const char *path, char *buf, size_t size)
 {
-        int fd, len;
+  int fd, len;
 
-        fd = open(path, O_RDONLY);
-        if (fd < 0)
-                return -1;
+  fd = open(path, O_RDONLY);
+  if (fd < 0)
+    return -1;
 
-        do {
-                len = read(fd, buf, size);
-        } while (len < 0 && errno == EINTR);
+  do {
+    len = read(fd, buf, size);
+  } while (len < 0 && errno == EINTR);
 
-        close(fd);
+  close(fd);
 
-        return len;
+  return len;
 }
 
 static void tuna_power_init(struct power_module *module)
 {
-    /*
-     * assume the kernel knows what to do
-     */
+    //I would hope the kernel knows what its tunables should be initialized to.
 }
 
 static int boostpulse_open(struct tuna_power_module *tuna)
 {
+    char buf[80];
+
     pthread_mutex_lock(&tuna->lock);
 
     if (tuna->boostpulse_fd < 0) {
         tuna->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
 
         if (tuna->boostpulse_fd < 0) {
-            if (boostpulse_warned == 0) {
+            if (!tuna->boostpulse_warned) {
                 strerror_r(errno, buf, sizeof(buf));
                 ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
-                boostpulse_warned = 1;
+                tuna->boostpulse_warned = 1;
             }
         }
-        else 
-            boostpulse_warned = 0;
     }
-    else
-        boostpulse_warned = 0;
 
     pthread_mutex_unlock(&tuna->lock);
     return tuna->boostpulse_fd;
@@ -118,46 +109,38 @@ static int boostpulse_open(struct tuna_power_module *tuna)
 
 static void tuna_power_set_interactive(struct power_module *module, int on)
 {
-    memset(buf_screen_off_max, 0, MAX_BUF_SZ);
-    memset(buf_scaling_max, 0, MAX_BUF_SZ);
-    int screen_off_max=0, scaling_max=0;
+    int len;
 
-    //screen state has changed since last call
-    if (on != previous_state)
-    {
-        previous_state = on;
+    char buf[MAX_BUF_SZ];
 
-        //read value of screen-off max from sysfs, and convert to int for comparison
-        if (sysfs_read(SCREENOFFMAXFREQ_PATH, buf_screen_off_max, sizeof(buf_screen_off_max)) != -1)
-            screen_off_max = atoi(buf_screen_off_max);
+    /*
+     * Lower maximum frequency when screen is off.  CPU 0 and 1 share a
+     * cpufreq policy.
+     */
+    if (!on) {
+        /* read the current scaling max freq and save it before updating */
+        len = sysfs_read(SCALINGMAXFREQ_PATH, buf, sizeof(buf));
 
-        //read value of max from sysfs, and convert to int for comparison
-        if (sysfs_read(SCALINGMAXFREQ_PATH, buf_scaling_max, sizeof(buf_scaling_max)) != -1)
-            scaling_max = atoi(buf_scaling_max);
-
-        //the largest of scaling_max and screen_off_max is truly the value of the CPU maximum frequency
-        //  ... so write it where it belongs.
-        if (scaling_max > screen_off_max)
-            memcpy(scaling_max_freq, 
-               (scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max,
-               strlen((scaling_max > screen_off_max) ? buf_scaling_max : buf_screen_off_max));
-
-        //if screen_off_max_freq is 0, use scaling_max_freq in its place
-        memcpy(screen_off_max_freq, 
-               (scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max,
-               strlen((scaling_max <= screen_off_max && screen_off_max > 0) ? buf_scaling_max : buf_screen_off_max));
-
-        //write the values back... except for SCREENOFFMAXFREQ_PATH, because we didn't change it.
-        sysfs_write(SCALINGMAXFREQ_PATH, on?scaling_max_freq:screen_off_max_freq);
-    }
+        /* make sure it's not the screen off freq, if the "on"
+         * call is skipped (can happen if you press the power
+         * button repeatedly) we might have read it. We should
+         * skip it if that's the case
+         */
+        if (len != -1 && strncmp(buf, screen_off_max_freq,
+                strlen(screen_off_max_freq)) != 0)
+            memcpy(scaling_max_freq, buf, sizeof(buf));
+        sysfs_write(SCALINGMAXFREQ_PATH, screen_off_max_freq);
+    } else
+        sysfs_write(SCALINGMAXFREQ_PATH, scaling_max_freq);
 }
 
 static void tuna_power_hint(struct power_module *module, power_hint_t hint,
                             void *data)
 {
     struct tuna_power_module *tuna = (struct tuna_power_module *) module;
+    char buf[80];
     int len;
-    int duration = 10000;
+    int duration = 1;
 
     switch (hint) {
     case POWER_HINT_INTERACTION:
@@ -165,21 +148,13 @@ static void tuna_power_hint(struct power_module *module, power_hint_t hint,
         if (data != NULL)
             duration = (int) data;
 
-        if (boostpulse_open(tuna) > 0) {
+        if (boostpulse_open(tuna) >= 0) {
             snprintf(buf, sizeof(buf), "%d", duration);
             len = write(tuna->boostpulse_fd, buf, strlen(buf));
 
             if (len < 0) {
-                //uh oh, prolly need a new FD next time around... screw locking, though... I'M TIGER WOODS!
-                tuna->boostpulse_fd = 0;
-
-                if (boostpulse_warned == 0) {
-                    strerror_r(errno, buf, sizeof(buf));
-                    ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
-                    boostpulse_warned = 1;
-                }
-            } else {
-                boostpulse_warned = 0;
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
             }
         }
         break;
@@ -215,4 +190,5 @@ struct tuna_power_module HAL_MODULE_INFO_SYM = {
 
     lock: PTHREAD_MUTEX_INITIALIZER,
     boostpulse_fd: -1,
+    boostpulse_warned: 0,
 };
