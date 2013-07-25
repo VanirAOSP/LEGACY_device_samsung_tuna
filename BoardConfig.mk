@@ -94,3 +94,5 @@ BOARD_SEPOLICY_DIRS := \
 BOARD_SEPOLICY_UNION := \
         genfs_contexts \
         file_contexts
+
+TARGET_BOOTLOADER_TYPE := fastboot
