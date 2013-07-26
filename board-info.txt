@@ -1,2 +1,2 @@
 require board=tuna
-require version-bootloader=PRIMELC03
+require version-bootloader=PRIMEMD04

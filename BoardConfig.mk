@@ -30,8 +30,12 @@ TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
+<<<<<<< HEAD
 TARGET_ARCH_VARIANT_CPU := cortex-a9
 ARCH_ARM_HAVE_TLS_REGISTER := true
+=======
+TARGET_CPU_VARIANT := cortex-a9
+>>>>>>> jb43-aosp
 
 TARGET_NO_BOOTLOADER := true
 
@@ -62,6 +66,7 @@ TARGET_RECOVERY_UI_LIB := librecovery_ui_tuna
 TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_tuna
 TARGET_RELEASETOOLS_EXTENSIONS := device/samsung/tuna
 
+TARGET_RECOVERY_FSTAB = device/samsung/tuna/fstab.tuna
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 685768704
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 14539537408
@@ -85,7 +90,6 @@ BOARD_WLAN_DEVICE           := bcmdhd
 WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
 #WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/bcmdhd.ko"
 WIFI_DRIVER_FW_PATH_STA     := "/vendor/firmware/fw_bcmdhd.bin"
-WIFI_DRIVER_FW_PATH_P2P     := "/vendor/firmware/fw_bcmdhd_p2p.bin"
 WIFI_DRIVER_FW_PATH_AP      := "/vendor/firmware/fw_bcmdhd_apsta.bin"
 
 BOARD_HAVE_BLUETOOTH := true
@@ -100,8 +104,17 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 
 BOARD_USES_SECURE_SERVICES := true
 
+<<<<<<< HEAD
 TARGET_EXTRA_CFLAGS := $(call cc-ifversion, -ge, 46, $(call cc-option,-mtune=cortex-a9,$(call cc-option,-mtune=cortex-a8)) $(call cc-option,-mcpu=cortex-a9,$(call cc-option,-mcpu=cortex-a8)))
 
 # VolumeHawtness
 BOARD_HAS_SAMSUNG_VOLUME_BUG := true  #ytf not
 
+=======
+BOARD_SEPOLICY_DIRS := \
+        device/samsung/tuna/sepolicy
+
+BOARD_SEPOLICY_UNION := \
+        genfs_contexts \
+        file_contexts
+>>>>>>> jb43-aosp

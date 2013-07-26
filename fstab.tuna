@@ -6,5 +6,11 @@
 
 /dev/block/platform/omap/omap_hsmmc.0/by-name/system    /system             ext4      ro,noatime,discard,noauto_da_alloc,barrier=0,data=writeback	wait
 /dev/block/platform/omap/omap_hsmmc.0/by-name/efs       /factory            ext4      ro                                                    wait
-/dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic,noauto_da_alloc,barrier=0,data=writeback    wait
-/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic,noauto_da_alloc,barrier=0,data=writeback    wait,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
+/dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait,check
+/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
+/dev/block/platform/omap/omap_hsmmc.0/by-name/misc      /misc               emmc      defaults                                              defaults
+/dev/block/platform/omap/omap_hsmmc.0/by-name/boot      /boot               emmc      defaults                                              defaults
+/dev/block/platform/omap/omap_hsmmc.0/by-name/recovery  /recovery           emmc      defaults                                              defaults
+/dev/block/platform/omap/omap_hsmmc.0/by-name/sbl       /sbl                emmc      defaults                                              defaults
+/dev/block/platform/omap/omap_hsmmc.0/by-name/xloader   /xloader            emmc      defaults                                              defaults
+/dev/block/platform/omap/omap_hsmmc.0/by-name/radio     /radio              emmc      defaults                                              defaults
