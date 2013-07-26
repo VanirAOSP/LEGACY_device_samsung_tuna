@@ -30,12 +30,8 @@ TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
-<<<<<<< HEAD
 TARGET_ARCH_VARIANT_CPU := cortex-a9
 ARCH_ARM_HAVE_TLS_REGISTER := true
-=======
-TARGET_CPU_VARIANT := cortex-a9
->>>>>>> jb43-aosp
 
 TARGET_NO_BOOTLOADER := true
 
