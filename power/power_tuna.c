@@ -65,18 +65,24 @@ static void sysfs_write(char *path, char *s)
 
 int sysfs_read(const char *path, char *buf, size_t size)
 {
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/timer_rate",
-                "20000");
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/min_sample_time",
-                "60000");
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/hispeed_freq",
-                "700000");
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/target_loads",
-                "70 920000:80 1200000:99");
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load",
-                "99");
-    sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay",
-                "80000");
+  int fd, len;
+
+  fd = open(path, O_RDONLY);
+  if (fd < 0)
+    return -1;
+
+  do {
+    len = read(fd, buf, size);
+  } while (len < 0 && errno == EINTR);
+
+  close(fd);
+
+  return len;
+}
+
+static void tuna_power_init(struct power_module *module)
+{
+    //I would hope the kernel knows what its tunables should be initialized to.
 }
 
 static int boostpulse_open(struct tuna_power_module *tuna)
