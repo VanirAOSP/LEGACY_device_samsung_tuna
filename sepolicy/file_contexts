@@ -1,6 +1,8 @@
 #rild
 /data/radio/nv_data.bin.*       u:object_r:radio_data_file:s0
+/data/smc(/.*)?                 u:object_r:tee_data_file:s0
 /dev/accelirq                   u:object_r:sensors_device:s0
+/dev/an30259a_leds              u:object_r:led_device:s0
 /dev/block/mmcblk0p4            u:object_r:radio_device:s0
 /dev/block/mmcblk0p9            u:object_r:radio_device:s0
 /dev/block/platform/omap/omap_hsmmc.0/by-name/radio     u:object_r:radio_device:s0
