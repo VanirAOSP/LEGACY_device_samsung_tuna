@@ -70,26 +70,26 @@ if ! which simg2img &>/dev/null; then
 		git clone git://android.git.linaro.org/platform/system/core.git || \
 			git clone http://android.git.linaro.org/platform/system/core.git
 		cd core
-		git checkout -b jb origin/linaro_android_4.2.1
+		git checkout -b jb origin/linaro_android_4.3
 		cd libsparse
 		gcc $CFLAGS -Iinclude -o simg2img simg2img.c sparse_crc32.c sparse_read.c sparse.c sparse_err.c backed_block.c output_file.c -lz
 		cd ../../extras
-		git checkout -b jb android-4.2.1_r1
+		git checkout -b jb android-4.3_r2.1
 		cd ext4_utils
 		gcc $CFLAGS -I../../core/libsparse/include -o make_ext4fs make_ext4fs_main.c make_ext4fs.c ext4fixup.c ext4_utils.c allocate.c contents.c extent.c indirect.c uuid.c sha1.c wipe.c ../../core/libsparse/backed_block.c ../../core/libsparse/output_file.c ../../core/libsparse/sparse_read.c ../../core/libsparse/sparse.c ../../core/libsparse/sparse_err.c ../../core/libsparse/sparse_crc32.c -lz
 		cd ../..
 	fi
 fi
-[ -e takju-jdq39-factory-5e273f02.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jdq39-factory-5e273f02.tgz
-[ -d takju-jdq39 ] || tar xf takju-jdq39-factory-5e273f02.tgz
-[ -e recovery-clockwork-touch-6.0.2.3-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.2.3-maguro.img
-cd takju-jdq39
+[ -e takju-jwr66v-factory-c2ef855e.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jwr66v-factory-c2ef855e.tgz
+[ -d takju-jwr66v ] || tar xf takju-jwr66v-factory-c2ef855e.tgz
+[ -e recovery-clockwork-touch-6.0.3.5-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.3.5-maguro.img
+cd takju-jwr66v
 if [ ! -e system.img ]; then
-	unzip image-takju-jdq39.zip
+	unzip image-takju-jwr66v.zip
 fi
 cd ..
 simg2img "$SRC"/system.img linaro.ext4
-simg2img takju-jdq39/system.img blob.ext4
+simg2img takju-jwr66v/system.img blob.ext4
 mkdir -p blob linaro system
 $SUDO mount -t ext4 -o loop,ro linaro.ext4 linaro
 $SUDO mount -t ext4 -o loop,ro blob.ext4 blob
@@ -121,8 +121,6 @@ $SUDO cp -a \
 	blob/vendor/lib/*.so \
 	target/vendor/lib/
 $SUDO cp -a \
-	blob/media/LMprec_508.emd \
-	blob/media/PFFprec_600.emd \
 	blob/media/bootanimation.zip \
 	blob/media/video \
 	target/media/
@@ -228,14 +226,14 @@ cd tmp
 cp \
 	"$SRC"/boot.img \
 	"$SRC"/userdata.img \
-	../takju-jdq39/android-info.txt \
+	../takju-jwr66v/android-info.txt \
 	./
 
 # We don't currently have a Linaro recovery system, so let's use the
 # most commonly used good one...
-cp ../recovery-clockwork-touch-6.0.2.3-maguro.img \
+cp ../recovery-clockwork-touch-6.0.3.5-maguro.img \
 	recovery.img
-zip ../linaro-takju-jdq39.zip boot.img recovery.img system.img userdata.img android-info.txt
+zip ../linaro-takju-jwr66v.zip boot.img recovery.img system.img userdata.img android-info.txt
 cd ..
 
 FASTBOOT="`which fastboot 2>/dev/null || :`"
@@ -282,7 +280,7 @@ if [ "$r" != "y" ]; then
 	echo
 	echo "Use"
 	echo "	$SUDO $FASTBOOT oem unlock"
-	echo "	$SUDO $FASTBOOT -w update linaro-takju-jdq39.zip"
+	echo "	$SUDO $FASTBOOT -w update linaro-takju-jwr66v.zip"
 	echo "to flash the image manually. Make sure you have the current"
 	echo "boot loader and radio firmware installed first."
 	echo
@@ -302,4 +300,4 @@ echo "and volume down keys at the same time while turning the phone on."
 echo
 # Expected to fail if the device is already unlocked
 $SUDO $FASTBOOT oem unlock || :
-$SUDO $FASTBOOT -w update linaro-takju-jdq39.zip
+$SUDO $FASTBOOT -w update linaro-takju-jwr66v.zip
