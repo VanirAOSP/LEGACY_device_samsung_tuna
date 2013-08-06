@@ -44,7 +44,7 @@ BOARD_KERNEL_BASE := 0x80000000
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOARD_PLATFORM := omap4
 TARGET_BOOTLOADER_BOARD_NAME := tuna
-#TARGET_USE_GATOR := true
+TARGET_USE_GATOR := true
 
 BOARD_EGL_CFG := device/samsung/tuna/egl.cfg
 BOARD_CREATE_TUNA_HDCP_KEYS_SYMLINK := true
@@ -105,11 +105,4 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 BOARD_USES_SECURE_SERVICES := true
 
 # VolumeHawtness
-BOARD_HAS_SAMSUNG_VOLUME_BUG := true  #ytf not
-
-BOARD_SEPOLICY_DIRS := \
-        device/samsung/tuna/sepolicy
-
-BOARD_SEPOLICY_UNION := \
-        genfs_contexts \
-        file_contexts
+BOARD_HAS_SAMSUNG_VOLUME_

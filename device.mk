@@ -20,9 +20,11 @@
 # Everything in this directory will become public
 
 ifeq ($(TARGET_PREBUILT_KERNEL),)
-LOCAL_KERNEL := device/samsung/tuna/kernel
+TUNA_LOCAL_KERNEL := device/samsung/tuna/kernel
+$(TUNA_LOCAL_KERNEL): android_kernel
+	cp -f $(PRODUCT_OUT)/obj/kernel/arch/arm/boot/zImage $(TUNA_LOCAL_KERNEL)
 else
-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+TUNA_LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 endif
 
 DEVICE_PACKAGE_OVERLAYS := device/samsung/tuna/overlay
@@ -62,8 +64,9 @@ PRODUCT_PACKAGES += \
         audio.usb.default
 
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
-        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
+	device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
+	device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf \
+	device/samsung/tuna/init.partitions.rc:root/init.partitions.rc
 
 PRODUCT_PACKAGES += \
         tuna_hdcp_keys
@@ -72,14 +75,13 @@ PRODUCT_PACKAGES += \
 #        keystore.tuna
 
 PRODUCT_COPY_FILES += \
-        $(LOCAL_KERNEL):kernel \
-        device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
-        device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
-        device/samsung/tuna/fstab.tuna:root/fstab.tuna \
-        device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
-        device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
-        device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
-        device/samsung/tuna/gps.conf:system/etc/gps.conf
+	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
+	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
+	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
+	device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
+	device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
+	device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
+	device/samsung/tuna/gps.conf:system/etc/gps.conf
 
 # Wifi
 ifneq ($(TARGET_PREBUILT_WIFI_MODULE),)
@@ -181,31 +183,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
         ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
-        ro.sf.lcd_density=320
-
-PRODUCT_PROPERTY_OVERRIDES += \
-        ro.hwui.disable_scissor_opt=true
-
-PRODUCT_CHARACTERISTICS := nosdcard
-
-PRODUCT_TAGS += dalvik.gc.type-precise
-
-PRODUCT_PACKAGES += \
-        librs_jni \
-        com.android.future.usb.accessory
-
-# Filesystem management tools
-PRODUCT_PACKAGES += \
-        e2fsck \
-        setup_fs
-
-$(call inherit-product, frameworks/native/build/phone-xhdpi-1024-dalvik-heap.mk)
-
-$(call inherit-product-if-exists, vendor/nxp/pn544/nxp-pn544-fw-vendor.mk)
-$(call inherit-product, hardware/ti/omap4xxx/omap4.mk)
-$(call inherit-product-if-exists, vendor/ti/proprietary/omap4/ti-omap4-vendor.mk)
-$(call inherit-product-if-exists, vendor/samsung/tuna/device-vendor.mk)
-
-BOARD_WLAN_DEVICE_REV := bcm4330_b2
-WIFI_BAND             := 802_11_ABG
-$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
+        ro.sf.lcd_densit
