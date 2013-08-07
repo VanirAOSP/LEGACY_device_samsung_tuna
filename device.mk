@@ -62,9 +62,9 @@ PRODUCT_PACKAGES += \
         audio.usb.default
 
 PRODUCT_COPY_FILES += \
-	device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
-	device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-	device/samsung/tuna/init.partitions.rc:root/init.partitions.rc
+        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
+        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf \
+        device/samsung/tuna/init.partitions.rc:root/init.partitions.rc 
 
 PRODUCT_PACKAGES += \
         tuna_hdcp_keys
@@ -73,14 +73,14 @@ PRODUCT_PACKAGES += \
 #        keystore.tuna
 
 PRODUCT_COPY_FILES += \
-	$(LOCAL_KERNEL):kernel \
-	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
-	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
-	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
-	device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
-	device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
-	device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
-	device/samsung/tuna/gps.conf:system/etc/gps.conf
+        $(LOCAL_KERNEL):kernel \
+        device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
+        device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
+        device/samsung/tuna/fstab.tuna:root/fstab.tuna \
+        device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
+        device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
+        device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
+        device/samsung/tuna/gps.conf:system/etc/gps.conf
 
 # Wifi
 ifneq ($(TARGET_PREBUILT_WIFI_MODULE),)
@@ -209,4 +209,4 @@ $(call inherit-product-if-exists, vendor/samsung/tuna/device-vendor.mk)
 
 BOARD_WLAN_DEVICE_REV := bcm4330_b2
 WIFI_BAND             := 802_11_ABG
-$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk) 
+$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
