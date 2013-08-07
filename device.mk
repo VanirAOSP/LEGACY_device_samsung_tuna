@@ -183,4 +183,31 @@ PRODUCT_PROPERTY_OVERRIDES += \
         ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
-        ro.sf.lcd_densit
+        ro.sf.lcd_density=320
+
+PRODUCT_PROPERTY_OVERRIDES += \
+        ro.hwui.disable_scissor_opt=true
+
+PRODUCT_CHARACTERISTICS := nosdcard
+
+PRODUCT_TAGS += dalvik.gc.type-precise
+
+PRODUCT_PACKAGES += \
+        librs_jni \
+        com.android.future.usb.accessory
+
+# Filesystem management tools
+PRODUCT_PACKAGES += \
+        e2fsck \
+        setup_fs
+
+$(call inherit-product, frameworks/native/build/phone-xhdpi-1024-dalvik-heap.mk)
+
+$(call inherit-product-if-exists, vendor/nxp/pn544/nxp-pn544-fw-vendor.mk)
+$(call inherit-product, hardware/ti/omap4xxx/omap4.mk)
+$(call inherit-product-if-exists, vendor/ti/proprietary/omap4/ti-omap4-vendor.mk)
+$(call inherit-product-if-exists, vendor/samsung/tuna/device-vendor.mk)
+
+BOARD_WLAN_DEVICE_REV := bcm4330_b2
+WIFI_BAND             := 802_11_ABG
+$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk) 

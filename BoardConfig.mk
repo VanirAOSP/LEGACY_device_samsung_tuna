@@ -105,4 +105,11 @@ BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 BOARD_USES_SECURE_SERVICES := true
 
 # VolumeHawtness
-BOARD_HAS_SAMSUNG_VOLUME_
+BOARD_HAS_SAMSUNG_VOLUME_BUG := true  #ytf not
+
+BOARD_SEPOLICY_DIRS := \
+        device/samsung/tuna/sepolicy
+
+BOARD_SEPOLICY_UNION := \
+        genfs_contexts \
+        file_contexts 
