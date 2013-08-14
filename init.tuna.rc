@@ -1,66 +1,61 @@
 import init.tuna.usb.rc
 
 on init
-        # See storage config details at http://source.android.com/tech/storage/
-        mkdir /mnt/shell/emulated 0700 shell shell
-        mkdir /storage/emulated 0555 root root
-        mkdir /storage/usbdisk 0755 system system
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
 
-        export EXTERNAL_STORAGE /storage/emulated/legacy
-        export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
-        export EMULATED_STORAGE_TARGET /storage/emulated
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
 
-        # Support legacy paths
-        symlink /storage/emulated/legacy /sdcard
-        symlink /storage/emulated/legacy /mnt/sdcard
-        symlink /storage/emulated/legacy /storage/sdcard0
-        symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+    # Support legacy paths
+    symlink /storage/emulated/legacy /sdcard
+    symlink /storage/emulated/legacy /mnt/sdcard
+    symlink /storage/emulated/legacy /storage/sdcard0
+    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
 
-        # create directory for mounting usb drives
-        mkdir /storage/usbdisk 0666 system system
-        symlink /storage/usbdisk /mnt/usbdisk
-        symlink /mnt/usbdisk /usbdisk
+    # create directory for mounting usb drives
+    mkdir /storage/usbdisk 0666 system system
+    symlink /storage/usbdisk /mnt/usbdisk
+    symlink /mnt/usbdisk /usbdisk
 
 on post-fs-data
-        mkdir /data/media 0770 media_rw media_rw
+    mkdir /data/media 0770 media_rw media_rw
 
-        mkdir /data/misc/wifi 0770 wifi wifi
-        mkdir /data/misc/wifi/sockets 0770 wifi wifi
-        mkdir /data/misc/dhcp 0770 dhcp dhcp
-        chown dhcp dhcp /data/misc/dhcp
-        mkdir /data/smc 0770 drmrpc drmrpc
+	mkdir /data/misc/wifi 0770 wifi wifi
+	mkdir /data/misc/wifi/sockets 0770 wifi wifi
+	mkdir /data/misc/dhcp 0770 dhcp dhcp
+	chown dhcp dhcp /data/misc/dhcp
+	mkdir /data/smc 0770 drmrpc drmrpc
         chown drmrpc drmrpc /data/smc/counter.bin
         chown drmrpc drmrpc /data/smc/storage.bin
         chown drmrpc drmrpc /data/smc/system.bin
 
-        # camera calibration
-        mkdir /data/misc/camera 0770 media media
-        mkdir /data/misc/camera/R5_MVEN003_LD2_ND0_IR0_SH0_FL1_SVEN003_DCCID1044 0770 media media
-        restorecon /data/misc/camera
+	# camera calibration
+	mkdir /data/misc/camera 0770 media media
+	mkdir /data/misc/camera/R5_MVEN003_LD2_ND0_IR0_SH0_FL1_SVEN003_DCCID1044 0770 media media
 
-        mkdir /data/radio 0775 radio radio
-        mkdir /data/radio/log 0775 radio radio
+	mkdir /data/radio 0775 radio radio
+	mkdir /data/radio/log 0775 radio radio
 
-        setprop vold.post_fs_data_done 1
+	setprop vold.post_fs_data_done 1
 
-        # LTE
-        chown radio system /sys/devices/tuna_otg/usb_sel
-        chown radio system /sys/devices/tuna_otg/uart_sel
-        chown radio system /sys/bus/i2c/drivers/fsa9480/4-0025/switch
-        chmod 0660 /sys/bus/i2c/drivers/fsa9480/4-0025/switch
-        chmod 0660 /sys/devices/tuna_otg/uart_sel
-        chmod 0660 /sys/devices/tuna_otg/usb_sel
+# LTE
+    chown radio system /sys/devices/tuna_otg/usb_sel
+    chown radio system /sys/devices/tuna_otg/uart_sel
+    chown radio system /sys/bus/i2c/drivers/fsa9480/4-0025/switch
+    chmod 0660 /sys/bus/i2c/drivers/fsa9480/4-0025/switch
+    chmod 0660 /sys/devices/tuna_otg/uart_sel
+    chmod 0660 /sys/devices/tuna_otg/usb_sel
 
 on boot
-        mount debugfs /sys/kernel/debug /sys/kernel/debug
-        chmod 0666 /dev/pvrsrvkm
+	mount debugfs /sys/kernel/debug /sys/kernel/debug
+	chmod 0666 /dev/pvrsrvkm
 
-        # autosuspend root hubs immediatly after attached devices
-        write /sys/bus/usb/devices/usb1/power/autosuspend_delay_ms 0
-        write /sys/bus/usb/devices/usb2/power/autosuspend_delay_ms 0
-
-        # Lower maximum frequency when screen is off
-        write /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq 700000
+# autosuspend root hubs immediatly after attached devices
+	write /sys/bus/usb/devices/usb1/power/autosuspend_delay_ms 0
+	write /sys/bus/usb/devices/usb2/power/autosuspend_delay_ms 0
 
 on fs
 	mkdir /factory 0775 radio radio
@@ -82,27 +77,33 @@ on fs
 	mount ext4 /dev/block/platform/omap/omap_hsmmc.0/by-name/efs /factory ro remount
 	setprop ro.crypto.fuse_sdcard true
 
-        # change permissions for mtd device
-        chmod 0660 /dev/mtd/mtd0
-        chown media media /dev/mtd/mtd0
+# change permissions for mtd device
+	chmod 0660 /dev/mtd/mtd0
+	chown media media /dev/mtd/mtd0
 
-        # change permissions for i2c-2 device
-        chmod 0660 /dev/i2c-2
-        chown media media /dev/i2c-2
+# change permissions for i2c-2 device
+	chmod 0660 /dev/i2c-2
+	chown media media /dev/i2c-2
 
-        # change permissions for Tiler driver
-        chmod 0777 /dev/tiler
-        chmod 0777 /dev/dmm
+# change permissions for Tiler driver
+    chmod 0777 /dev/tiler
+    chmod 0777 /dev/dmm
 
-        # change permissions for ION driver
-        chmod 0777 /dev/ion
+# change permissions for gamma settings
+    chmod 0666 /sys/devices/platform/omapdss/manager0/gamma
 
-        # We chown/chmod /factory because mount is run as root + defaults
-        chown radio radio /factory
-        chmod 0775 /factory
+# change permissions for ION driver
+    chmod 0777 /dev/ion
 
-        # add symlink for HDCP key
+# We chown/chmod /factory because mount is run as root + defaults
+	chown radio radio /factory
+	chmod 0775 /factory
+
+# add symlink for HDCP key
         symlink /factory/hdcp.keys /system/vendor/firmware/hdcp.keys
+
+# allow to modify Wifi power behaviour in terms of battery/speed at sleep time
+    chown root system sys/module/bcmdhd/parameters/uiFastWifi
 
 # nfc
     setprop ro.nfc.port "COM4"
@@ -119,8 +120,6 @@ on fs
 	chmod 0660 /sys/class/rfkill/rfkill0/state
 	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
 	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-	restorecon /sys/class/rfkill/rfkill0/state
-	restorecon /sys/class/rfkill/rfkill0/type
 
 # backlight
 	chown system system /sys/class/backlight/s6e8aa0/brightness
@@ -141,38 +140,29 @@ on fs
 	chown radio radio /sys/bus/usb/devices/usb1/power/control
 
 on property:persist.sys.tuna.off_mode=*
-        write /d/pm_debug/enable_off_mode ${persist.sys.tuna.off_mode}
+	write /d/pm_debug/enable_off_mode ${persist.sys.tuna.off_mode}
 
 on property:ril.modem.lte.powercontrol=*
-        write /sys/bus/usb/devices/1-1/power/control ${ril.modem.lte.powercontrol}
+	write /sys/bus/usb/devices/1-1/power/control ${ril.modem.lte.powercontrol}
 
 service fRom /system/bin/fRom \
-        -x /data/misc/camera/R5_MVEN003_LD2_ND0_IR0_SH0_FL1_SVEN003_DCCID1044 \
-        -d /dev/mtd/mtd0
-        user media
-        group media
-        class late_start
-        oneshot
-
-service hciattach /system/bin/brcm_patchram_plus --enable_hci --no2bytes --enable_lpm \
-        --tosleep 50000 --baudrate 3000000 --use_baudrate_for_download --i2s=1,1,0,1 \
-        --patchram /vendor/firmware/bcm4330.hcd /dev/ttyO1
-        class main
-        user bluetooth
-        group bluetooth net_bt_admin
-        disabled
-        oneshot
+	-x /data/misc/camera/R5_MVEN003_LD2_ND0_IR0_SH0_FL1_SVEN003_DCCID1044 \
+	-d /dev/mtd/mtd0
+	user media
+	group media
+	class late_start
+	oneshot
 
 service pvrsrvctl /vendor/bin/pvrsrvctl --start --no-module
-        class core
-        user root
-        group root
-        oneshot
+	class core
+	user root
+	group root
+	oneshot
 
 # create filesystems if necessary
 service setup_fs /system/bin/setup_fs \
-                /dev/block/platform/omap/omap_hsmmc.0/by-name/cache \
-                /dev/block/platform/omap/omap_hsmmc.0/by-name/userdata
+		/dev/block/platform/omap/omap_hsmmc.0/by-name/cache \
+		/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata
         class core
         user root
         group root
@@ -194,7 +184,7 @@ service smc_pa_wvdrm /system/bin/smc_pa_ctrl \
 
 # virtual sdcard daemon running as media_rw (1023)
 service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
-        class late_start
+    class late_start
 
 service p2p_supplicant /system/bin/wpa_supplicant \
 	-iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
@@ -225,14 +215,14 @@ service wpa_supplicant /system/bin/wpa_supplicant \
 	oneshot
 
 service dhcpcd_wlan0 /system/bin/dhcpcd -aABDKL
-        class main
-        disabled
-        oneshot
+	class main
+	disabled
+	oneshot
 
 service dhcpcd_p2p /system/bin/dhcpcd -aABKL
-        class main
-        disabled
-        oneshot
+	class main
+	disabled
+	oneshot
 
 service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
 	class main
@@ -240,19 +230,19 @@ service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
 	oneshot
 
 service dhcpcd_eth0 /system/bin/dhcpcd -ABDKL
-        class main
-        disabled
-        oneshot
+	class main
+	disabled
+	oneshot
 
 service iprenew_wlan0 /system/bin/dhcpcd -n
-        class main
-        disabled
-        oneshot
+	class main
+	disabled
+	oneshot
 
 service iprenew_p2p /system/bin/dhcpcd -n
-        class main
-        disabled
-        oneshot
+	class main
+	disabled
+	oneshot
 
 service iprenew_bt-pan /system/bin/dhcpcd -n
 	class main
