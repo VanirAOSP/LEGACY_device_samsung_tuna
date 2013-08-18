@@ -262,5 +262,11 @@ service ohshitbutton /system/bin/reboot
 	oneshot
 	keycodes 114 115 116
 
+service bugreport /system/bin/dumpstate -d -p -B \
+        -o /data/data/com.android.shell/files/bugreports/bugreport
+	class main
+	disabled
+	oneshot
+
 service battery_charger /charger
 	class charger
