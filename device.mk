@@ -62,8 +62,10 @@ PRODUCT_PACKAGES += \
         audio.usb.default
 
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
-        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
+        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf
+
+###### this is identical to the one in DSPManager, so let's never have to update it AGAIN for beats fixes.
+#        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
 
 PRODUCT_PACKAGES += \
         tuna_hdcp_keys
