@@ -33,3 +33,6 @@
 
 # Accelerometer
 /dev/accelirq                   u:object_r:accelerometer_device:s0
+
+# Hardware tunables
+/sys/class/backlight/s6e8aa0/acl_set    u:object_r:sysfs_writable:s0

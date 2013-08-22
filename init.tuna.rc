@@ -106,6 +106,11 @@ on fs
 # allow to modify Wifi power behaviour in terms of battery/speed at sleep time
     chown root system sys/module/bcmdhd/parameters/uiFastWifi
 
+# Hardware tunables
+    chown root system /sys/class/backlight/s6e8aa0/acl_set
+    chmod 0664 /sys/class/backlight/s6e8aa0/acl_set
+    restorecon /sys/class/backlight/s6e8aa0/acl_set
+
 # nfc
     setprop ro.nfc.port "COM4"
     chmod 0600 /dev/ttyO3
