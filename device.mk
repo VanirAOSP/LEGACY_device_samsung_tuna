@@ -19,6 +19,12 @@
 #
 # Everything in this directory will become public
 
+ifeq ($(TARGET_PREBUILT_KERNEL),)
+LOCAL_KERNEL := device/samsung/tuna/kernel
+else
+LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+endif
+
 DEVICE_PACKAGE_OVERLAYS := device/samsung/tuna/overlay
 
 # This device is xhdpi.  However the platform doesn't
@@ -68,6 +74,7 @@ PRODUCT_PACKAGES += \
 #        keystore.tuna
 
 PRODUCT_COPY_FILES += \
+        $(LOCAL_KERNEL):kernel \
         device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
         device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
         device/samsung/tuna/fstab.tuna:root/fstab.tuna \
