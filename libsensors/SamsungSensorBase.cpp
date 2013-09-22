@@ -27,6 +27,14 @@
 
 #include "SamsungSensorBase.h"
 
+#ifdef __clang__
+// Workaround for clang bug #17320
+// FIXME remove once the bug is fixed
+static const pthread_mutex_t __pthread_mutex_initializer = PTHREAD_MUTEX_INITIALIZER;
+#undef PTHREAD_MUTEX_INITIALIZER
+#define PTHREAD_MUTEX_INITIALIZER __pthread_mutex_initializer
+#endif
+
 char *SamsungSensorBase::makeSysfsName(const char *input_name,
                                        const char *file_name) {
     char *name;
