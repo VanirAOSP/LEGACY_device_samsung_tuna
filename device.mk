@@ -56,7 +56,9 @@ PRODUCT_PACKAGES += \
         audio.usb.default
 
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf
+        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
+        device/samsung/tuna/init.partitions.rc:root/init.partitions.rc
+
 
 ###### this is identical to the one in DSPManager, so let's never have to update it AGAIN for beats fixes.
 #        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
@@ -68,13 +70,13 @@ PRODUCT_PACKAGES += \
 #        keystore.tuna
 
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
-        device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
-        device/samsung/tuna/fstab.tuna:root/fstab.tuna \
-        device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
-        device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
-        device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
-        device/samsung/tuna/gps.conf:system/etc/gps.conf
+	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
+	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
+	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
+	device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
+	device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
+	device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
+	device/samsung/tuna/gps.conf:system/etc/gps.conf
 
 # Wifi
 ifneq ($(TARGET_PREBUILT_WIFI_MODULE),)

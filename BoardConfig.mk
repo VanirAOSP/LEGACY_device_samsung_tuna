@@ -48,6 +48,7 @@ TARGET_KERNEL_CUSTOM_TOOLCHAIN := arm-eabi-4.7
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOARD_PLATFORM := omap4
 TARGET_BOOTLOADER_BOARD_NAME := tuna
+TARGET_USE_GATOR := true
 
 BOARD_EGL_CFG := device/samsung/tuna/egl.cfg
 BOARD_CREATE_TUNA_HDCP_KEYS_SYMLINK := true
@@ -107,7 +108,6 @@ BOARD_SEPOLICY_DIRS += \
 
 BOARD_SEPOLICY_UNION += \
         genfs_contexts \
-        file_contexts \
-        device.te \
-        domain.te \
-        system.te
+        file_contexts
+
+TARGET_BOOTLOADER_TYPE := fastboot
