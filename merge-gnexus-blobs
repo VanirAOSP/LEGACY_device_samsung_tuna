@@ -92,7 +92,7 @@ if ! which simg2img &>/dev/null; then
 fi
 [ -e takju-jwr66y-factory-5104ab1d.tgz ] || wget https://dl.google.com/dl/android/aosp/takju-jwr66y-factory-5104ab1d.tgz
 [ -d takju-jwr66y ] || tar xf takju-jwr66y-factory-5104ab1d.tgz
-[ -e recovery-clockwork-touch-6.0.3.6-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.3.6-maguro.img
+[ -e recovery-clockwork-touch-6.0.4.3-maguro.img ] || wget http://download2.clockworkmod.com/recoveries/recovery-clockwork-touch-6.0.4.3-maguro.img
 cd takju-jwr66y
 if [ ! -e system.img ]; then
 	unzip image-takju-jwr66y.zip
@@ -241,7 +241,7 @@ cp \
 
 # We don't currently have a Linaro recovery system, so let's use the
 # most commonly used good one...
-cp ../recovery-clockwork-touch-6.0.3.6-maguro.img \
+cp ../recovery-clockwork-touch-6.0.4.3-maguro.img \
 	recovery.img
 zip ../linaro-takju-jwr66y.zip boot.img recovery.img system.img userdata.img android-info.txt
 cd ..
