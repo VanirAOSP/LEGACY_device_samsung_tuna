@@ -29,7 +29,7 @@
 #define TEMPERATURE_CELCIUS (1.0f/10.0f)
 
 TemperatureSensor::TemperatureSensor()
-    : SamsungSensorBase(NULL, "temp", ABS_MISC)
+    : SamsungSensorBase(NULL, "barometer", ABS_MISC)
 {
     mPendingEvent.sensor = ID_T;
     mPendingEvent.type = SENSOR_TYPE_AMBIENT_TEMPERATURE;
