@@ -26,17 +26,14 @@ LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_CFLAGS := -DLOG_TAG=\"Sensors\"
-# For Android versions < 4.4
-LOCAL_C_INCLUDES += hardware/invensense/libsensors
-# For Android versions >= 4.4
 LOCAL_C_INCLUDES += hardware/invensense/60xx/libsensors
 LOCAL_SRC_FILES := \
-        sensors.cpp \
-        InputEventReader.cpp \
-        LightSensor.cpp \
-        ProximitySensor.cpp \
-        PressureSensor.cpp \
-        SamsungSensorBase.cpp
+	sensors.cpp \
+	InputEventReader.cpp \
+	LightSensor.cpp \
+	ProximitySensor.cpp \
+	PressureSensor.cpp \
+	SamsungSensorBase.cpp
 
 LOCAL_SHARED_LIBRARIES := libinvensense_hal liblog libcutils libutils libdl
 

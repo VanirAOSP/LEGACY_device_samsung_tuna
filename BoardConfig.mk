@@ -45,6 +45,12 @@ BOARD_KERNEL_BASE := 0x80000000
 TARGET_KERNEL_SOURCE := kernel/samsung/tuna
 TARGET_KERNEL_CUSTOM_TOOLCHAIN := arm-eabi-4.7
 
+# Define kernel config for inline building
+TARGET_KERNEL_CONFIG := cyanogenmod_tuna_defconfig
+TARGET_KERNEL_SOURCE := kernel/samsung/tuna
+
+TARGET_PREBUILT_KERNEL := device/samsung/tuna/kernel
+
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOARD_PLATFORM := omap4
 TARGET_BOOTLOADER_BOARD_NAME := tuna
@@ -65,6 +71,7 @@ RECOVERY_FSTAB_VERSION=2
 
 TARGET_RECOVERY_PIXEL_FORMAT := "BGRA_8888"
 TARGET_RECOVERY_UI_LIB := librecovery_ui_tuna
+BOARD_RECOVERY_SWIPE := true
 
 # device-specific extensions to the updater binary
 TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_tuna
@@ -102,6 +109,10 @@ TARGET_BOOTANIMATION_USE_RGB565 := true
 BOARD_LIB_DUMPSTATE := libdumpstate.tuna
 
 BOARD_USES_SECURE_SERVICES := true
+
+BOARD_HAS_NO_SELECT_BUTTON := true
+BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/tuna/recovery_keys.c
+BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 
 BOARD_SEPOLICY_DIRS += \
         device/samsung/tuna/sepolicy

@@ -29,19 +29,19 @@ PRODUCT_AAPT_CONFIG := normal hdpi xhdpi
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 PRODUCT_PACKAGES := \
-        lights.tuna \
-        charger \
-        charger_res_images
+	lights.tuna \
+	charger \
+	charger_res_images
 
 PRODUCT_PACKAGES += \
-        sensors.tuna \
-        libinvensense_mpl
+	sensors.tuna \
+	libinvensense_mpl
 
 PRODUCT_PACKAGES += \
-        nfc.tuna
+	nfc.tuna
 
 PRODUCT_PACKAGES += \
-        power.tuna
+	power.tuna
 
 # Support for Browser's saved page feature. This allows
 # for pages saved on previous versions of the OS to be
@@ -51,23 +51,19 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-        audio.primary.tuna \
-        audio.a2dp.default \
-        audio.usb.default
+	audio.primary.tuna \
+	audio.a2dp.default \
+	audio.usb.default
 
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
-        device/samsung/tuna/init.partitions.rc:root/init.partitions.rc
-
-
-###### this is identical to the one in DSPManager, so let's never have to update it AGAIN for beats fixes.
-#        device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
+	device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
+	device/samsung/tuna/audio_effects.conf:system/vendor/etc/audio_effects.conf
 
 PRODUCT_PACKAGES += \
-        tuna_hdcp_keys
+	tuna_hdcp_keys
 
 #PRODUCT_PACKAGES += \
-#        keystore.tuna
+#	keystore.tuna
 
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
@@ -81,21 +77,21 @@ PRODUCT_COPY_FILES += \
 # Wifi
 ifneq ($(TARGET_PREBUILT_WIFI_MODULE),)
 PRODUCT_COPY_FILES += \
-        $(TARGET_PREBUILT_WIFI_MODULE):system/lib/modules/bcmdhd.ko
+	$(TARGET_PREBUILT_WIFI_MODULE):system/lib/modules/bcmdhd.ko
 endif
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
+	device/samsung/tuna/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
 
 PRODUCT_PROPERTY_OVERRIDES := \
-        wifi.interface=wlan0
+	wifi.interface=wlan0
 
 # Enable AAC 5.1 output
 PRODUCT_PROPERTY_OVERRIDES += \
-        media.aac_51_output_enabled=true
+	media.aac_51_output_enabled=true
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-        persist.sys.usb.config=mtp
+	persist.sys.usb.config=mtp
 
 # NFC
 PRODUCT_PACKAGES += \
@@ -111,36 +107,36 @@ PRODUCT_PACKAGES += \
 
 # Key maps
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/tuna-gpio-keypad.kl:system/usr/keylayout/tuna-gpio-keypad.kl \
-        device/samsung/tuna/tuna-gpio-keypad.kcm:system/usr/keychars/tuna-gpio-keypad.kcm \
-        device/samsung/tuna/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
-        device/samsung/tuna/sec_jack.kcm:system/usr/keychars/sec_jack.kcm \
-        device/samsung/tuna/sii9234_rcp.kl:system/usr/keylayout/sii9234_rcp.kl \
-        device/samsung/tuna/sii9234_rcp.kcm:system/usr/keychars/sii9234_rcp.kcm
+	device/samsung/tuna/tuna-gpio-keypad.kl:system/usr/keylayout/tuna-gpio-keypad.kl \
+	device/samsung/tuna/tuna-gpio-keypad.kcm:system/usr/keychars/tuna-gpio-keypad.kcm \
+	device/samsung/tuna/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
+	device/samsung/tuna/sec_jack.kcm:system/usr/keychars/sec_jack.kcm \
+	device/samsung/tuna/sii9234_rcp.kl:system/usr/keylayout/sii9234_rcp.kl \
+	device/samsung/tuna/sii9234_rcp.kcm:system/usr/keychars/sii9234_rcp.kcm
 
 # Input device calibration files
 PRODUCT_COPY_FILES += \
-        device/samsung/tuna/Melfas_MMSxxx_Touchscreen.idc:system/usr/idc/Melfas_MMSxxx_Touchscreen.idc
+	device/samsung/tuna/Melfas_MMSxxx_Touchscreen.idc:system/usr/idc/Melfas_MMSxxx_Touchscreen.idc
 
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
-        frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
-        frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
-        frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
-        frameworks/native/data/etc/android.hardware.camera.front.xml:system/etc/permissions/android.hardware.camera.front.xml \
-        frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
-        frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
-        frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
-        frameworks/native/data/etc/android.hardware.sensor.proximity.xml:system/etc/permissions/android.hardware.sensor.proximity.xml \
-        frameworks/native/data/etc/android.hardware.sensor.light.xml:system/etc/permissions/android.hardware.sensor.light.xml \
-        frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:system/etc/permissions/android.hardware.sensor.gyroscope.xml \
-        frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
-        frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
-        frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
-        frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
-        frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
-        frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
-        frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml
+	frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
+	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+	frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
+	frameworks/native/data/etc/android.hardware.camera.front.xml:system/etc/permissions/android.hardware.camera.front.xml \
+	frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
+	frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
+	frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
+	frameworks/native/data/etc/android.hardware.sensor.proximity.xml:system/etc/permissions/android.hardware.sensor.proximity.xml \
+	frameworks/native/data/etc/android.hardware.sensor.light.xml:system/etc/permissions/android.hardware.sensor.light.xml \
+	frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:system/etc/permissions/android.hardware.sensor.gyroscope.xml \
+	frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
+	frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
+	frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
+	frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
+	frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
+	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
+	frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml
 
 # Melfas touchscreen firmware
 PRODUCT_COPY_FILES += \
