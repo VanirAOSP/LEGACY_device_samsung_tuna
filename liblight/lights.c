@@ -157,6 +157,22 @@ static int write_leds_priority()
 		}
 	}
 
+}
+
+// similar to write_leds(), but deals with the priority of certain virtual LEDs over others
+static int write_leds_priority()
+{
+	// find the highest priority virtual LED that should be illuminated and
+	// call write_leds() with it
+	int i;
+
+	for (i = 0; i < LED_TYPE_LAST; i++) {
+		// if the LED isn't off and isn't "black" then use it
+		if (g_led_states[i].state != LED_LIGHT_OFF) {
+			return write_leds(&g_led_states[i]);
+		}
+	}
+
 	// nothing should be lit?  make sure to turn it off
 	return write_leds(&g_led_states[LED_TYPE_LAST - 1]);
 }
@@ -215,6 +231,7 @@ static int set_light_leds_notifications(struct light_device_t *dev,
 
 static int set_light_leds_attention(struct light_device_t *dev,
                         struct light_state_t const *state)
+			struct light_state_t const *state)
 {
 	struct light_state_t attention_state = *state;
 	if (attention_state.flashMode == LIGHT_FLASH_NONE) {
