@@ -19,19 +19,13 @@ package com.cyanogenmod.settings.device;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.preference.DialogPreference;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 import android.util.Log;
-import android.os.Vibrator;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
@@ -132,4 +126,3 @@ public class AccelCalibration extends DialogPreference implements OnClickListene
         }
     }
 }
-

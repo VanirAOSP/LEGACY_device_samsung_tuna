@@ -27,8 +27,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.util.Log;
 
-
-
 /**
  * Special preference type that allows to set a pre-configuration of Color and Gamma
  * Value on Nexus Devices.
