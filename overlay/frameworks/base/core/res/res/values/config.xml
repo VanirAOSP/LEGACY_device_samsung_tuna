@@ -256,8 +256,8 @@
     <!-- Does the battery LED support multiple colors? Used to decide if the user can change the colors -->
     <bool name="config_multiColorBatteryLed">true</bool>
 
-    <!-- Device supports LED flashlight 
-    <bool name="config_enableTorch">true</bool> -->
+    <!-- Device supports LED flashlight -->
+    <bool name="config_enableTorch">true</bool>
 
     <!-- Vibrator pattern for feedback about touching a virtual key -->
     <integer-array name="config_virtualKeyVibePattern">
