@@ -20,6 +20,11 @@ on init
     mkdir /mnt/media_rw/usbdisk 0775 system system
     mkdir /storage/usbdisk 0000 system system
 
+    # rild sandbox setup
+    mkdir /sandbox 0511 root root
+    mkdir /sandbox/rild 0555 root root
+    mount tmpfs tmpfs /sandbox/rild nodev nosuid size=256k,mode=0755,uid=0,gid=0
+
 on post-fs-data
     mkdir /data/media 0770 media_rw media_rw
 
@@ -149,6 +154,11 @@ on fs
 # ril control auto-suspend
 	chmod 0660 /sys/bus/usb/devices/usb1/power/control
 	chown radio radio /sys/bus/usb/devices/usb1/power/control
+
+# set up the sandboxing wrapper for rild
+    write /sandbox/rild/rild 1
+    mount bind /system/bin/rild /sandbox/rild/rild bind
+    mount bind /system/bin/rild-sandbox /system/bin/rild bind
 
 on property:persist.sys.tuna.off_mode=*
 	write /d/pm_debug/enable_off_mode ${persist.sys.tuna.off_mode}
