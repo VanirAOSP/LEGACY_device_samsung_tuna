@@ -98,7 +98,7 @@ static struct sensor_t sSensorList[LOCAL_SENSORS + MPLSensor::numSensors] = {
       { "BMP180 Temperature sensor",
           "Bosch",
           1, SENSORS_TEMPERATURE_HANDLE,
-          SENSOR_TYPE_AMBIENT_TEMPERATURE, 200.0f, 0.1f, 0.67f, 20000,
+          SENSOR_TYPE_AMBIENT_TEMPERATURE, 200.0f, 0.1f, 0.67f, 20000, 0, 0, { } },
 #ifdef SENSORS_DEVICE_API_VERSION_1_1
           0, 0,
 #endif
