@@ -53,8 +53,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	audio.primary.tuna \
 	audio.a2dp.default \
-	audio.usb.default \
-	audio.r_submix.default
+	audio.usb.default
 
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/audio/audio_policy.conf:system/etc/audio_policy.conf \
@@ -73,14 +72,7 @@ PRODUCT_COPY_FILES += \
 	device/samsung/tuna/ueventd.tuna.rc:root/ueventd.tuna.rc \
 	device/samsung/tuna/media_profiles.xml:system/etc/media_profiles.xml \
 	device/samsung/tuna/media_codecs.xml:system/etc/media_codecs.xml \
-    device/samsung/tuna/gps.conf:system/etc/gps.conf \
-    device/samsung/tuna/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf \
-    device/samsung/tuna/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
-
-# p2p and WPA supplicant overlays
-PRODUCT_PACKAGES += \
-    wpa_supplicant_overlay.conf \
-    p2p_supplicant_overlay.conf
+	device/samsung/tuna/gps.conf:system/etc/gps.conf
 
 # Wifi
 ifneq ($(TARGET_PREBUILT_WIFI_MODULE),)
