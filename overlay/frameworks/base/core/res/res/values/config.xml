@@ -278,4 +278,5 @@
     <!-- Enable translucent lockscreen-->
     <bool name="config_enableLockScreenTranslucentDecor">true</bool>
 
+    <bool name="config_enableWifiDisplay">true</bool>
 </resources>
